@@ -52,11 +52,12 @@ ss_file = os.path.join(os.path.dirname(config["txseq"].get("hisat_index")),
                                "genome.ss")
 print("ss file is "+ss_file)
 
+RESOURCES = config.get("resources", {})
 
 #rule all
 rule full:
     input:
-        os.path.join("hisat.dir", "annotations","novel.splice.sites.txt")
+        expand(os.path.join("hisat.dir", "{samp}.bam"), samp=S.samples.keys())
 
 ## first pass of hisat. 
 rule first_pass:
@@ -72,9 +73,9 @@ rule first_pass:
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         known_ss=ss_file,
         novel_ss_outfile=os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt"),
-    threads: 4
+    threads: RESOURCES["threads"]
     resources:
-        cpus_per_task=4
+        **RESOURCES,
     log:
         os.path.join("hisat.dir","first.pass.dir", "{samp}.log")
     shell:
@@ -102,8 +103,11 @@ rule collect_sites:
     threads: 1
     resources:
         cpus_per_task=1
+    log:
+        os.path.join("hisat.dir", "annotations","novel.splice.sites.log")
     shell:
         """
+        {{
         mkdir -p tmp.dir;
         sort_dir=`mktemp -d -p tmp.dir`;
         zcat {input} \
@@ -111,6 +115,7 @@ rule collect_sites:
         | uniq \
         > {output};
         rm -rf $sort_dir
+        }} > {log} 2>&1
         """
 
 ## second pass of hisat. 
@@ -126,11 +131,14 @@ rule second_pass:
         opts=config["hisat"].get("options"),
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
-    threads: 4
+    threads: RESOURCES["threads"]
     resources:
-        cpus_per_task=4
+        **RESOURCES,
+    log:
+        os.path.join("hisat.dir", "{samp}.log")
     shell:
         """
+        {{
         mkdir -p tmp.dir;
             sort_dir=`mktemp -d -p tmp.dir`;
                 hisat2 \
@@ -139,9 +147,10 @@ rule second_pass:
                         {params.fastq_input} \
                         --novel-splicesite-infile {input.splice_file} \
                         {params.strand_param} \
-                        {params.opts}
-                    |    samtools view - -bS
+                        {params.opts} \
+                    |    samtools view - -bS \
                     | samtools sort - -T $sort_dir -o {output};
                     samtools index {output};
                     rm -rf $sort_dir;
+        }} > {log} 2>&1
         """

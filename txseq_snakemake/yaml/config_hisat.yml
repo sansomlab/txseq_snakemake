@@ -37,7 +37,11 @@ hisat:
   # hisat2 options
   options: --dta --score-min L,0.0,-0.2
 
-  memory: 2G
-  threads: 2
+resources:
+    threads: 8
+    mem_mb: 8000
+    time: "10:00:00"
+    slurm_partition: short
+    cpus_per_task: 4
 
 
