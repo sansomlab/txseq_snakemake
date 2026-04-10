@@ -41,7 +41,7 @@ resources:
     threads: 8
     mem_mb: 8000
     time: "10:00:00"
-    slurm_partition: short
+    partition: short
     cpus_per_task: 4
 
 
