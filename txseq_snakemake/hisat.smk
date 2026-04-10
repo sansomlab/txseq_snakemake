@@ -111,7 +111,8 @@ rule collect_sites:
 ## second pass of hisat. 
 rule second_pass:
     input:
-        os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
+        sample_int=os.path.join(config["fq_dir"],"{samp}_1.fq.gz"),
+        splice_file=os.path.join("hisat.dir", "annotations","novel.splice.sites.txt")
     output:
         os.path.join("hisat.dir", "{samp}.bam")
     params:
@@ -120,7 +121,6 @@ rule second_pass:
         opts=config["hisat"].get("options"),
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
-        novel_splice_sites=os.path.join("hisat.dir","annotation","novel.splice.sites.txt")
     threads: 4
     resources:
         cpus_per_task=4
@@ -132,7 +132,7 @@ rule second_pass:
                         -x {params.index} \
                         --threads {threads} \
                         {params.fastq_input} \
-                        --novel-splicesite-infile {params.novel_splice_sites} \
+                        --novel-splicesite-infile {input.splice_file} \
                         {params.strand_param} \
                         {params.opts}
                     |    samtools view - -bS
