@@ -56,15 +56,14 @@ print("ss file is "+ss_file)
 #rule all
 rule full:
     input:
-        expand(os.path.join(config["rundir"], "hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz"), samp=S.samples.keys()),
-
+        os.path.join("hisat.dir", "annotations","novel.splice.sites.txt")
 
 ## first pass of hisat. 
 rule first_pass:
     input:
         os.path.join(config["fq_dir"],"{samp}_1.fq.gz")
     output:
-        os.path.join(config["rundir"], "hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
+        os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
     params:
         index=config["txseq"].get("hisat_index"),
     #    threads=config["hisat_thread"],
@@ -72,10 +71,14 @@ rule first_pass:
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         known_ss=ss_file,
+    threads: 4
+    resources:
+        cpus_per_task=4
     shell:
         """
         hisat2 \
                     -x {params.index} \
+                    --threads {threads} \
                     {params.fastq_input} \
                     --known-splicesite-infile {params.known_ss} \
                     --novel-splicesite-outfile {output} \
@@ -83,4 +86,57 @@ rule first_pass:
                     {params.opts} \
                     -S /dev/null; 
                 gzip {output}
+        """
+
+## collect all novel splice sites files into one
+rule collect_sites:
+    input:
+        expand(os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz"), samp=S.samples.keys()),
+    output:
+        os.path.join("hisat.dir", "annotations","novel.splice.sites.txt")
+    threads: 1
+    resources:
+        cpus_per_task=1
+    shell:
+        """
+        mkdir -p tmp.dir;
+        sort_dir=`mktemp -d -p tmp.dir`;
+        zcat {input}
+        | sort -k1,1 -T $sort_dir
+        | uniq
+        > {output};
+        rm -rf $sort_dir
+        """
+
+## second pass of hisat. 
+rule second_pass:
+    input:
+        os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
+    output:
+        os.path.join("hisat.dir", "{samp}.bam")
+    params:
+        index=config["txseq"].get("hisat_index"),
+    #    threads=config["hisat_thread"],
+        opts=config["hisat"].get("options"),
+        strand_param=strand_param,
+        fastq_input=lambda wildcards: fastq_input(wildcards.samp),
+        novel_splice_sites=os.path.join("hisat.dir","annotation","novel.splice.sites.txt")
+    threads: 4
+    resources:
+        cpus_per_task=4
+    shell:
+        """
+        mkdir -p tmp.dir;
+            sort_dir=`mktemp -d -p tmp.dir`;
+                hisat2 \
+                        -x {params.index} \
+                        --threads {threads} \
+                        {params.fastq_input} \
+                        --novel-splicesite-infile {params.novel_splice_sites} \
+                        {params.strand_param} \
+                        {params.opts}
+                    |    samtools view - -bS
+                    | samtools sort - -T $sort_dir -o {output};
+                    samtools index {output};
+                    rm -rf $sort_dir;
         """
