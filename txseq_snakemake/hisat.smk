@@ -71,21 +71,26 @@ rule first_pass:
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         known_ss=ss_file,
+        novel_ss_outfile=os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt"),
     threads: 4
     resources:
         cpus_per_task=4
+    log:
+        os.path.join("hisat.dir","first.pass.dir", "{samp}.log")
     shell:
         """
+        {{
         hisat2 \
                     -x {params.index} \
                     --threads {threads} \
                     {params.fastq_input} \
                     --known-splicesite-infile {params.known_ss} \
-                    --novel-splicesite-outfile {output} \
+                    --novel-splicesite-outfile {params.novel_ss_outfile} \
                     {params.strand_param} \
                     {params.opts} \
                     -S /dev/null; 
-                gzip {output}
+                gzip {params.novel_ss_outfile} 
+        }} > {log} 2>&1
         """
 
 ## collect all novel splice sites files into one
@@ -101,9 +106,9 @@ rule collect_sites:
         """
         mkdir -p tmp.dir;
         sort_dir=`mktemp -d -p tmp.dir`;
-        zcat {input}
-        | sort -k1,1 -T $sort_dir
-        | uniq
+        zcat {input} \
+        | sort -k1,1 -T $sort_dir \
+        | uniq \
         > {output};
         rm -rf $sort_dir
         """
