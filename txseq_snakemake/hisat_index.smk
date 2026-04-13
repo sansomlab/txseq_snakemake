@@ -69,7 +69,7 @@ rule transcriptome_index:
         os.path.join(config["rundir"],"genome_tran")
     params:
         primary_assembly=config["primary_assembly"]
-    threads: 8
+    threads: 16
     resources:
         **RESOURCES,
     log:
