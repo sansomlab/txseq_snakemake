@@ -2,6 +2,8 @@
 # =======================================
 #
 
+rundir:
+
 # A local path to the Ensembl primary assembly in gzipped FASTA format
 # This should contain the reference chromosomes, unplaced sequence and unlocalised sequences. It should not contain ALT or patch sequences.
 #

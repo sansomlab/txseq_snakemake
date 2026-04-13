@@ -14,7 +14,7 @@ import txseq_snakemake.tasks as T
 #rule all
 rule full:
     input:
-        txinfo=os.path.join("ensembl.dir","api_completed.txt")
+        os.path.join("ensembl.dir","api_dir","api_completed.txt")
 
 rule extract_YPAR:
     input: 
@@ -163,55 +163,28 @@ rule api:
         tx2gene=os.path.join("ensembl.dir","transcript_to_gene_map"),
         txinfo=os.path.join("ensembl.dir","transcript.info.tsv.gz")
     output:
-        txinfo=os.path.join("ensembl.dir","api_completed.txt")
+        os.path.join("ensembl.dir","api_dir","api_completed.txt")
     log:
         txinfo=os.path.join("ensembl.dir","api_completed.log")
     params:
-    run:
-            import os
-            from pathlib import Path
-            if not os.path.exists("ensembl.dir/api.dir"):
-                os.mkdir("ensembl.dir/api.dir")
+        rundir=config["rundir"],
+        usedir=os.path.join(config["rundir"],"ensembl.dir","api_dir"),
+        script=os.path.join(workflow.basedir,
+                        "python",
+                        "ensembl_api.py"),
+    shell:
+            """
+            {{
+                python {params.script} \
+                --pa={input.pa} \
+                --rundir={params.rundir} \
+                --txfa={input.txfa} \
+                --gtf={input.gtf} \
+                --tx2gene={input.tx2gene} \
+                --txinfo={input.txinfo} \
+                --usedir={params.usedir} \
+                --outfile={output}
+            }} > {log} 2>&1
+            """
 
-            pa = input.pa
-    
-            if not os.path.exists(pa):
-                raise ValueError("ypar masked primary assembly file not found")
-    
-            os.symlink(os.path.join("..","..",pa), 
-                    os.path.join("ensembl.dir","api.dir","txseq.genome.fa.gz"))
-    
-            txfa = input.txfa
             
-            if not os.path.exists(txfa):
-                raise ValueError("filtered transcript fasta file not found")
-                
-            os.symlink(os.path.join("..","..",txfa), 
-                    os.path.join("ensembl.dir","api.dir","txseq.transcript.fa.gz"))
-            
-            gtf = input.gtf
-            
-            if not os.path.exists(gtf):
-                raise ValueError("filtered geneset gtf file not found")
-                
-            os.symlink(os.path.join("..","..", gtf), 
-                    os.path.join("ensembl.dir","api.dir","txseq.geneset.gtf.gz"))
-            
-            tx2gene = input.tx2gene
-            
-            if not os.path.exists(tx2gene):
-                raise ValueError("transcript-to-gene map file not found")
-                
-            os.symlink(os.path.join("..","..", tx2gene), 
-                    os.path.join("ensembl.dir","api.dir","txseq.transcript.to.gene.map"))
-            
-            txinfo = input.txinfo
-            
-            if not os.path.exists(txinfo):
-                raise ValueError("transcript info file not found")
-                
-            os.symlink(os.path.join("..","..", txinfo), 
-                    os.path.join("ensembl.dir","api.dir","txseq.transcript.info.tsv.gz"))
-            
-            touch output
-
