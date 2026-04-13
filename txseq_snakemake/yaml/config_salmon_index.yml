@@ -1,0 +1,61 @@
+# pipeline_salmon_index.py configuration file
+# ===========================================
+#
+rundir:
+# see: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
+# used for building a SAF genome index
+#
+#
+# The txseq sanitised Ensembl primary assembly
+#
+# If working on the KIR BMRC space, use e.g.
+#       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
+#       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
+#
+# For the mouse_hscs example, set to 
+#       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
+#
+genome_fasta: 
+
+
+# The txseq sanitised Ensembl transcript fasta sequences
+#
+# If working on the KIR BMRC space, use e.g. 
+#       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
+#       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
+#
+# For the mouse_hscs example, set to 
+#       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
+#
+transcript_fasta: 
+
+# The source of the fasta file.
+# if set to "gencode", the "--gencode" flag is passed to the "salmon index" command
+# When using a txseq sanitised Ensembl transcript fasta file, this should not be set.
+fasta_source: 
+
+# When using the suggested genome and transcript fasta sequences from gencode
+# is strongly recommended to use the --keepDuplicates argument. If --keepDuplicates
+# is not used, Salmon maps reads to the first encountered model in a set of duplicates
+# and discards the rest of the gene models in the set.
+options: --keepDuplicates
+
+# size of the kmers that should be used for the quasi index
+# From the docs (https://salmon.readthedocs.io/en/latest/salmon.html#preparing-transcriptome-indices-mapping-based-mode):
+#
+#   "While the mapping algorithms will make used of arbitrarily long matches between the query 
+#   and reference, the k size selected here will act as the minimum acceptable length for a 
+#   valid match. Thus, a smaller value of k may slightly improve sensitivity. We find that a 
+#   k of 31 seems to work well for reads of 75bp or longer, but you might consider a smaller
+#   k if you plan to deal with shorter reads. Also, a shorter value of k may improve
+#   sensitivity even more when using selective alignment (enabled via the –validateMappings 
+#   flag). So, if you are seeing a smaller mapping rate than you might expect, consider 
+#   building the index with a slightly smaller k."
+#
+kmerLen: 31
+  
+resources:
+  
+  # resource allocation
+  memory: 32G
+  threads: 12
