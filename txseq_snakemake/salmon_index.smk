@@ -12,17 +12,19 @@ import numpy as np
 import txseq_snakemake.tasks as T
 
 RESOURCES = config.get("resources", {})
+source = "--gencode" if config["fasta_source"] == "gencode" else ""
 
 rule full:
     input:
         genome_fasta=config["genome_fasta"],
         transcript_fasta=config["transcript_fasta"]
     output:
-        os.path.join(config["rundir"],"salmon.index")
+        "salmon_index.sentinel"
     params:
         kmerLens=config["kmerLen"],
         options=config["options"],
-        sources=config["fasta_source"]
+        sources=source
+        #salmon_index_loc=os.path.join(config["rundir"],"salmon.index")
     threads: 12
     resources:
         **RESOURCES,
@@ -31,7 +33,8 @@ rule full:
     shell:
         """
         {{
-            grep "^>" <(gunzip -c {input.genome_fasta}) \
+            grep "^>" <(gunzip -c {input.genome_fasta})      
+                   |  grep '^>' \
                    | cut -d " " -f 1 \
                    > decoys.txt;
                    sed -i.bak -e 's/>//g' decoys.txt;
@@ -44,5 +47,6 @@ rule full:
                                 -i salmon_index \
                                 {params.options} \
                                 {params.sources}
+                touch {output}
         }} > {log} 2>&1
         """
