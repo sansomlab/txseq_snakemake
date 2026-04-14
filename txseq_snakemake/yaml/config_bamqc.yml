@@ -1,7 +1,7 @@
 # Pipeline pipeline_bam_qc.py configuration file
 # =============================================
 #
-
+rundir: 
 # select tasks to run
 run:
 
