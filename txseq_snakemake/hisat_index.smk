@@ -16,7 +16,7 @@ RESOURCES = config.get("resources", {})
 #rule all
 rule full:
     input:
-        os.path.join(config["rundir"],"genome_tran")
+        os.path.join(config["rundir"],"genome_tran.sentinel")
 
 ## splice sites. 
 rule splice_sites:
@@ -66,9 +66,10 @@ rule transcriptome_index:
         ss=os.path.join(config["rundir"],"genome.ss"),
         exon=os.path.join(config["rundir"],"genome.exon")
     output:
-        os.path.join(config["rundir"],"genome_tran")
+        os.path.join(config["rundir"],"genome_tran.sentinel")
     params:
-        primary_assembly=config["primary_assembly"]
+        primary_assembly=config["primary_assembly"],
+        outs=os.path.join(config["rundir"],"genome_tran")
     threads: 16
     resources:
         **RESOURCES,
@@ -85,6 +86,7 @@ rule transcriptome_index:
                    genome.fa \
                    genome_tran; 
                    rm genome.fa;
+            touch {output}
         }} > {log} 2>&1
         """
 
