@@ -42,7 +42,8 @@ else:
 #rule all
 rule full:
     input:
-        expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys())
+        rna_seq_metrics=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys()),
+        three_prime_bias=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys())
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -114,5 +115,31 @@ rule collectRnaSeqMetrics:
                    | grep -v "##" \
                    > {params.coverage_out} || touch {params.coverage_out};
                    rm $picard_out;
+        }} > {log} 2>&1
+        """
+
+# --------------------- Three prime bias analysis --------------------------- #
+
+rule three_prime_bias:
+    input:
+        os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics.cov.hist")
+    output: 
+        os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias")
+    params:
+        script=os.path.join(workflow.basedir,
+                "python",
+                "three_prime_bias.py"),
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias.log")
+    shell:
+        """
+        {{
+            python {params.script} \
+                --outfile={output} \
+                --coverage_histogram={input}
+
         }} > {log} 2>&1
         """
