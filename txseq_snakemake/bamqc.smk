@@ -54,6 +54,12 @@ if config["picard"].get("estimatelibrarycomplexity_options"):
 else:
         picard_options_estlibcomp = ""
 
+#get einsert size metrics options
+if config["picard"].get("picard_insertsizemetric_options"):
+        picard_options_insertsize = config["picard"].get("picard_insertsizemetric_options")
+else:
+        picard_options_insertsize = ""
+
 #establish whether to run estimate library complexity
 
 if paired and estimate_lib_comp:
@@ -61,6 +67,17 @@ if paired and estimate_lib_comp:
 else:
     elc_torun=""
 
+#establish whether to run insert size metrics
+
+if paired:
+    insert_torun=[expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.summary"),samp=S.samples.keys()),
+                    expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.histogram.pdf"),samp=S.samples.keys()),
+                    expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.histogram"),samp=S.samples.keys())]
+else:
+    insert_torun=""
 
 
 
@@ -71,7 +88,8 @@ rule full:
         three_prime_bias=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys()),
         align_sum_met=expand(os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics"),samp=S.samples.keys()),
         fs=expand(os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys()),
-        elc=elc_torun
+        elc=elc_torun,
+        ins=insert_torun
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -273,6 +291,52 @@ rule estimate_library_complexity:
                    {params.picard_options};
                    grep . $picard_out | grep -v "#" | head -n2 \
                    > {output};
+                   rm $picard_out;
+        }} > {log} 2>&1
+        """
+
+
+# --------------------- Insert size metrics and histograms --------------------------- #
+
+
+rule insert_size_metrics_and_hists:
+    input:
+        reference_sequence = os.path.join(config["txseq"].get("annotations"),
+                                      "api.dir/txseq.genome.fa.gz")
+    output:
+        summary=os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.summary"),
+        hist_pdf=os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.histogram.pdf"),
+        hist=os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.histogram")
+    params:
+        bam=lambda wildcards: bam_file(wildcards.samp),
+        mktemp_template = "ctmp.CollectInsertSizeMetrics.XXXXXXXXXX",
+        picard_cmd=config["picard"].get("cmd"),
+        validation_stringency = config["picard"].get("validation_stringency"),
+        picard_options=picard_options_insertsize
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.log")
+    shell:
+        """
+        {{
+            picard_out=`mktemp -p . {params.mktemp_template}`;
+                   {params.picard_cmd} CollectInsertSizeMetrics \
+                   -I {params.bam} \
+                   -O $picard_out \
+                   --Histogram_FILE {output.hist_pdf} \
+                   --VALIDATION_STRINGENCY {params.validation_stringency} \
+                   --REFERENCE_SEQUENCE {input.reference_sequence} \
+                   {params.picard_options};
+                   grep "MEDIAN_INSERT_SIZE" -A 1 $picard_out \
+                   > {output.summary};
+                   sed -e '1,/## HISTOGRAM/d' $picard_out \
+                   > {output.hist};
                    rm $picard_out;
         }} > {log} 2>&1
         """
