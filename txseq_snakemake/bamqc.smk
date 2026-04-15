@@ -25,7 +25,7 @@ strand=config.get("strand")
 print(strand)
 
 paired=config.get("paired")
-print(strand)
+estimate_lib_comp=config["run"].get("estimateLibraryComplexity")
 
 #get picard strand
 if strand=="forward":
@@ -56,7 +56,7 @@ else:
 
 #establish whether to run estimate library complexity
 
-if paired:
+if paired and estimate_lib_comp:
     elc_torun=expand(os.path.join("bam.qc.dir/estimate.library.complexity.dir/","{samp}.library.complexity"),samp=S.samples.keys())
 else:
     elc_torun=""
