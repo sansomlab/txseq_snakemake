@@ -33,8 +33,7 @@ rule full:
     shell:
         """
         {{
-            grep "^>" <(gunzip -c {input.genome_fasta})      
-                   |  grep '^>' \
+            grep "^>" <(gunzip -c {input.genome_fasta}) \
                    | cut -d " " -f 1 \
                    > decoys.txt;
                    sed -i.bak -e 's/>//g' decoys.txt;
