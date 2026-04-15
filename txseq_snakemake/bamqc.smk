@@ -24,6 +24,9 @@ def bam_file(sample_id):
 strand=config.get("strand")
 print(strand)
 
+paired=config.get("paired")
+print(strand)
+
 #get picard strand
 if strand=="forward":
         strand_param = "FIRST_READ_TRANSCRIPTION_STRAND"
@@ -35,9 +38,31 @@ print(strand_param)
 
 #get collectrnaseqmetrics options
 if config["picard"].get("collectrnaseqmetrics_options"):
-        picard_options = config["picard"].get("collectrnaseqmetrics_options")
+        picard_options_rnaseqmet = config["picard"].get("collectrnaseqmetrics_options")
 else:
-        picard_options = ""
+        picard_options_rnaseqmet = ""
+
+#get alignment_summary_metrics options
+if config["picard"].get("alignmentsummarymetric_options"):
+        picard_options_alignsummet = config["picard"].get("alignmentsummarymetric_options")
+else:
+        picard_options_alignsummet = ""
+
+#get estimate library complexity options
+if config["picard"].get("estimatelibrarycomplexity_options"):
+        picard_options_estlibcomp = config["picard"].get("estimatelibrarycomplexity_options")
+else:
+        picard_options_estlibcomp = ""
+
+#establish whether to run estimate library complexity
+
+if paired:
+    elc_torun=expand(os.path.join("bam.qc.dir/estimate.library.complexity.dir/","{samp}.library.complexity"),samp=S.samples.keys())
+else:
+    elc_torun=""
+
+
+
 
 #rule all
 rule full:
@@ -45,7 +70,8 @@ rule full:
         rna_seq_metrics=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys()),
         three_prime_bias=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys()),
         align_sum_met=expand(os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics"),samp=S.samples.keys()),
-        fs=expand(        os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys())
+        fs=expand(os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys()),
+        elc=elc_torun
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -91,7 +117,7 @@ rule collectRnaSeqMetrics:
         mktemp_template = "ctmp.CollectRnaSeqMetrics.XXXXXXXXXX",
         picard_cmd=config["picard"].get("cmd"),
         strand_param=strand_param,
-        picard_options=picard_options
+        picard_options=picard_options_rnaseqmet
 
     threads: 1
     resources:
@@ -157,7 +183,7 @@ rule alignment_summary_metrics:
         os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics")
     params:
         bam=lambda wildcards: bam_file(wildcards.samp),
-        picard_options=picard_options,
+        picard_options=picard_options_alignsummet,
         validation_stringency = config["picard"].get("validation_stringency"),
         mktemp_template = "ctmp.CollectAlignmentSummaryMetrics.XXXXXXXXXX",
         picard_cmd=config["picard"].get("cmd"),
@@ -211,5 +237,42 @@ rule fraction_spliced:
                            else{{s+=1}}}} \
                           END{{print s/(us+s)}}' \
                     >> {output}
+        }} > {log} 2>&1
+        """
+
+# --------------------- Estimate library complexity --------------------------- #
+
+
+rule estimate_library_complexity:
+    input:
+        reference_sequence = os.path.join(config["txseq"].get("annotations"),
+                                      "api.dir/txseq.genome.fa.gz")
+    output:
+        os.path.join("bam.qc.dir/estimate.library.complexity.dir/",
+                                "{samp}.library.complexity")
+    params:
+        bam=lambda wildcards: bam_file(wildcards.samp),
+        mktemp_template = "ctmp.EstimateLibraryComplexity.XXXXXXXXXX",
+        picard_cmd=config["picard"].get("cmd"),
+        validation_stringency = config["picard"].get("validation_stringency"),
+        picard_options=picard_options_estlibcomp
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir/estimate.library.complexity.dir/",
+                                "{samp}.library.complexity.log")
+    shell:
+        """
+        {{
+            picard_out=`mktemp -p . {params.mktemp_template}`;
+                   {params.picard_cmd} EstimateLibraryComplexity \
+                   -I {params.bam} \
+                   -O $picard_out \
+                   --VALIDATION_STRINGENCY {params.validation_stringency} \
+                   {params.picard_options};
+                   grep . $picard_out | grep -v "#" | head -n2 \
+                   > {output};
+                   rm $picard_out;
         }} > {log} 2>&1
         """

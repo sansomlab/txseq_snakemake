@@ -13,6 +13,7 @@ sqlite:
   himem: 10000M
 
 strand:
+paired: 
 
 # path to the sample table
 samples: ../samples.tsv
