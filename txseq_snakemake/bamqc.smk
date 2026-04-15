@@ -43,7 +43,9 @@ else:
 rule full:
     input:
         rna_seq_metrics=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys()),
-        three_prime_bias=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys())
+        three_prime_bias=expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys()),
+        align_sum_met=expand(os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics"),samp=S.samples.keys()),
+        fs=expand(        os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys())
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -141,5 +143,73 @@ rule three_prime_bias:
                 --outfile={output} \
                 --coverage_histogram={input}
 
+        }} > {log} 2>&1
+        """
+
+# --------------------- Alignment summary metrics --------------------------- #
+
+
+rule alignment_summary_metrics:
+    input:
+        reference_sequence = os.path.join(config["txseq"].get("annotations"),
+                                      "api.dir/txseq.genome.fa.gz")
+    output:
+        os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics")
+    params:
+        bam=lambda wildcards: bam_file(wildcards.samp),
+        picard_options=picard_options,
+        validation_stringency = config["picard"].get("validation_stringency"),
+        mktemp_template = "ctmp.CollectAlignmentSummaryMetrics.XXXXXXXXXX",
+        picard_cmd=config["picard"].get("cmd"),
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics.log")
+    shell:
+        """
+        {{
+            picard_out=`mktemp -p . {params.mktemp_template}`;
+                   {params.picard_cmd} CollectAlignmentSummaryMetrics \
+                   -I {params.bam} \
+                   -O $picard_out \
+                   --REFERENCE_SEQUENCE {input} \
+                   --VALIDATION_STRINGENCY {params.validation_stringency} \
+                   {params.picard_options};
+                   sed -e '1,/## HISTOGRAM/!d' $picard_out \
+                   | grep . | grep -v "#" \
+                   > {output};
+                   rm $picard_out;
+        }} > {log} 2>&1
+        """
+
+
+# --------------------- Fraction of spliced reads --------------------------- #
+
+
+rule fraction_spliced:
+    input:
+        reference_sequence = os.path.join(config["txseq"].get("annotations"),
+                                      "api.dir/txseq.genome.fa.gz")
+    output:
+        os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced")
+    params:
+        bam=lambda wildcards: bam_file(wildcards.samp),
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced.log")
+    shell:
+        """
+        {{
+            echo "fraction_spliced" > {output};
+                   samtools view {params.bam} \
+                   | grep NH:i:1 \
+                   | cut -f 6 \
+                   | awk '{{if(index($1,"N")==0){{us+=1}} \
+                           else{{s+=1}}}} \
+                          END{{print s/(us+s)}}' \
+                    >> {output}
         }} > {log} 2>&1
         """
