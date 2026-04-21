@@ -1,0 +1,19 @@
+# pipeline_preprocess_quantseq_fwd.py configuration file
+# =======================================
+#
+
+# The location of a text file containing a list of the paths to FASTQ files to be processed.
+# The file should have one path per line with no header.
+libraries: fastqs.tsv
+
+# Trim reads?
+# Either "False"
+# or the desired length of the read. Bases will be trimmed from the 3' end.
+trim: False
+
+resources:
+    threads: 8
+    mem_mb: 8000
+    time: "10:00:00"
+    partition: short
+    cpus_per_task: 1
