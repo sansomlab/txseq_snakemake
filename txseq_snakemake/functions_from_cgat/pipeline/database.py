@@ -94,12 +94,8 @@ def build_load_statement(tablename, retry=True, options=""):
 def load(infile,
          outfile=None,
          options="",
-         collapse=False,
-         transpose=False,
          tablename=None,
          retry=True,
-         limit=0,
-         shuffle=False,
          job_memory=None,
          to_cluster=False):
     """import data from a tab-separated file into database.
@@ -124,23 +120,9 @@ def load(infile,
         table name is derived from `outfile` if `tablename` is not set.
     options : string
         Command line options for the `csv2db.py` script.
-    collapse : string
-        If set, the table will be collapsed before loading. This
-        transforms a data set with two columns where the first column
-        is the row name into a multi-column table.  The value of
-        collapse is the value used for missing values.
-    transpose : string
-        If set, the table will be transposed before loading. The first
-        column in the first row will be set to the string within
-        transpose.
     retry : bool
         If True, multiple attempts will be made if the data can
         not be loaded at the first try, for example if a table is locked.
-    limit : int
-        If set, only load the first n lines.
-    shuffle : bool
-        If set, randomize lines before loading. Together with `limit`
-        this permits loading a sample of rows.
     job_memory : string
         Amount of memory to allocate for job. If unset, uses the global
         default. Implies to_cluster=True.
@@ -150,7 +132,7 @@ def load(infile,
     """
 
     if job_memory is None:
-        job_memory = get_params()["cluster_memory_default"]
+        job_memory = "8G"
 
     if not tablename:
         tablename = to_table(outfile)
@@ -158,40 +140,21 @@ def load(infile,
     statement = []
 
     if infile.endswith(".gz"):
-        statement.append("zcat %(infile)s")
+        statement.append("zcat {infile}")
     else:
-        statement.append("cat %(infile)s")
-
-    if collapse:
-        statement.append(
-            "python -m cgatcore.table "
-            "--log=%(outfile)s.collapse.log "
-            "--collapse=%(collapse)s")
-
-    if transpose:
-        statement.append(
-            "python -m cgatcore.table "
-            "--log=%(outfile)s.transpose.log "
-            "--transpose "
-            "--set-transpose-field=%(transpose)s")
-
-    if shuffle:
-        statement.append(
-            "python -m cgatcore.table "
-            "--log=%(outfile)s.shuffle.log "
-            "--method=randomize-rows")
-
-    if limit > 0:
-        # use awk to filter in order to avoid a pipeline broken error from head
-        statement.append("awk 'NR > %i {exit(0)} {print}'" % (limit + 1))
-        # ignore errors from cat or zcat due to broken pipe
-        ignore_pipe_errors = True
+        statement.append("cat {infile}")
 
     statement.append(build_load_statement(tablename,
                                           options=options,
                                           retry=retry))
 
-    statement = " | ".join(statement) + " > %(outfile)s"
+    statement = " | ".join(statement) + " > {outfile}"
+
+
+    statement = statement.format(
+        infile=infile,
+        outfile=outfile,
+    )
 
     return(statement)
 

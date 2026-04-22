@@ -14,6 +14,7 @@ import txseq_snakemake.tasks as T
 from txseq_snakemake.functions_from_cgat import pipeline as P
 
 from txseq_snakemake.functions_from_cgat.pipeline.database import concatenate_and_load
+from txseq_snakemake.functions_from_cgat.pipeline.database import load
 
 from txseq_snakemake.functions_from_cgat.pipeline.parameters import PARAMS
 
@@ -117,6 +118,7 @@ rule full:
         alignment_sum_met_load=os.path.join("bam.qc.dir", "alignment_summary_metrics.load"),
         ins_load=insert_toload,
         fraction_spliced_load=os.path.join("bam.qc.dir", "fraction_spliced.load"),
+        sample_load=os.path.join("bam.qc.dir", "samples.load")
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -545,6 +547,30 @@ rule insert_size_met_hist_load:
                     cat="sample_id",
                     job_memory="8G",
                     options='-i "insert_size" -e'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+
+
+rule load_sample_information:
+    input:
+        config["samples"]
+    output:
+        os.path.join("bam.qc.dir", "samples.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/samples_load.log"
+    run:
+            statement = load(
+                    infile=str(input[0]),
+                    outfile=str(output[0]),
+                    options='-i "sample_id"',
+                    job_memory="8G"
                 )
 
             print("Running statement:\n", statement, flush=True)
