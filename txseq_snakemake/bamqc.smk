@@ -95,6 +95,11 @@ if paired:
 else:
     insert_torun=""
 
+if paired:
+    insert_toload=[os.path.join("bam.qc.dir", "insert.size.metrics_hist.load"),
+    os.path.join("bam.qc.dir", "insert.size.metrics_sum.load")]
+else:
+    insert_toload=""
 
 
 #rule all
@@ -108,7 +113,9 @@ rule full:
         ins=insert_torun,
         rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load"),
         three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load"),
-        elc_load=elc_torun_load
+        elc_load=elc_torun_load,
+        alignment_sum_met_load=os.path.join("bam.qc.dir", "alignment_summary_metrics.load"),
+        ins_load=insert_toload
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -200,7 +207,7 @@ rule collectRnaSeqMetrics_load:
             statement = concatenate_and_load(
                     infiles=list(input),
                     outfile=str(output[0]),
-                    regex_filename=r".*/.*/(.*)\.rnaseq\.metrics$",
+                    regex_filename=".*/.*/(.*).rnaseq.metrics",
                     cat="sample_id",
                     job_memory="8G",
                     options='-i "sample_id"'
@@ -300,6 +307,31 @@ rule alignment_summary_metrics:
                    rm $picard_out;
         }} > {log} 2>&1
         """
+
+# --------------------- load alignment summary metrics --------------------------- #
+rule alignment_summary_metrics_load:
+    input:
+        expand(os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics"),samp=S.samples.keys()),
+    output:
+        os.path.join("bam.qc.dir", "alignment_summary_metrics.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/alignment_summary_metrics.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).alignment.summary.metrics",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "sample_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
 
 
 # --------------------- Fraction of spliced reads --------------------------- #
@@ -439,3 +471,55 @@ rule insert_size_metrics_and_hists:
                    rm $picard_out;
         }} > {log} 2>&1
         """
+
+
+# --------------------- load insert size metrics --------------------------- #
+rule insert_size_met_summary_load:
+    input:
+        expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.summary"),samp=S.samples.keys())
+    output:
+        os.path.join("bam.qc.dir", "insert.size.metrics_sum.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/insert.size.metrics_sum.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).insert.size.metrics.summary",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options=''
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+rule insert_size_met_hist_load:
+    input:
+        expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
+                                "{samp}.insert.size.metrics.histogram"),samp=S.samples.keys())
+    output:
+        os.path.join("bam.qc.dir", "insert.size.metrics_hist.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/insert.size.metrics_hist.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).insert.size.metrics.histogram",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "insert_size" -e'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
