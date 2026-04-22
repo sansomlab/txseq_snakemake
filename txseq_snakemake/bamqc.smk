@@ -101,7 +101,8 @@ rule full:
         fs=expand(os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys()),
         elc=elc_torun,
         ins=insert_torun,
-        rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load")
+        rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load"),
+        three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load")
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -178,14 +179,6 @@ rule collectRnaSeqMetrics:
 
 # --------------------- load these RNAseq metrics --------------------------- #
 
-def concat_and_load_rnaSeqMetrics (input, output):
-    outputt=output[0]
-    return(concatenate_and_load(input, outputt,
-                           regex_filename=".*/.*/(.*).rnaseq.metrics",
-                           cat="sample_id",
-                           job_memory="8G",
-                           options='-i "sample_id"'))
-
 rule collectRnaSeqMetrics_load:
     input:
         expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys()),
@@ -209,12 +202,6 @@ rule collectRnaSeqMetrics_load:
 
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
-
-
-
-
-
-
 
 
 
@@ -243,6 +230,33 @@ rule three_prime_bias:
 
         }} > {log} 2>&1
         """
+
+
+
+# --------------------- load 3' bias --------------------------- #
+rule three_prime_bias_load:
+    input:
+        expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.three.prime.bias"),samp=S.samples.keys()),
+    output:
+        os.path.join("bam.qc.dir", "three_prime_bias.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/three_prime_bias.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).three.prime.bias",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "sample_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
 
 # --------------------- Alignment summary metrics --------------------------- #
 
