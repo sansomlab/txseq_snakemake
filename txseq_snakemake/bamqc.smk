@@ -11,6 +11,17 @@ import numpy as np
 # import local pipeline utility functions
 import txseq_snakemake.tasks as T
 
+from txseq_snakemake.functions_from_cgat import pipeline as P
+
+from txseq_snakemake.functions_from_cgat.pipeline.database import concatenate_and_load
+
+from txseq_snakemake.functions_from_cgat.pipeline.parameters import PARAMS
+
+import txseq_snakemake.functions_from_cgat.tables 
+import txseq_snakemake.functions_from_cgat.csv2db 
+
+PARAMS.update(config)
+
 RESOURCES = config.get("resources", {})
 
 ## use txseq tasks to read in sample and library tables
@@ -89,7 +100,8 @@ rule full:
         align_sum_met=expand(os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics"),samp=S.samples.keys()),
         fs=expand(os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys()),
         elc=elc_torun,
-        ins=insert_torun
+        ins=insert_torun,
+        rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load")
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -163,6 +175,48 @@ rule collectRnaSeqMetrics:
                    rm $picard_out;
         }} > {log} 2>&1
         """
+
+# --------------------- load these RNAseq metrics --------------------------- #
+
+def concat_and_load_rnaSeqMetrics (input, output):
+    outputt=output[0]
+    return(concatenate_and_load(input, outputt,
+                           regex_filename=".*/.*/(.*).rnaseq.metrics",
+                           cat="sample_id",
+                           job_memory="8G",
+                           options='-i "sample_id"'))
+
+rule collectRnaSeqMetrics_load:
+    input:
+        expand(os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"), samp=S.samples.keys()),
+    output:
+        os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/qc_rnaseq_metrics.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=r".*/.*/(.*)\.rnaseq\.metrics$",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "sample_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+
+
+
+
+
+
+
 
 # --------------------- Three prime bias analysis --------------------------- #
 
