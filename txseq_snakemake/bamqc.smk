@@ -78,6 +78,11 @@ if paired and estimate_lib_comp:
 else:
     elc_torun=""
 
+if paired and estimate_lib_comp:
+    elc_torun_load=os.path.join("bam.qc.dir", "estimate_library_complexity.load")
+else:
+    elc_torun_load=""
+
 #establish whether to run insert size metrics
 
 if paired:
@@ -102,7 +107,8 @@ rule full:
         elc=elc_torun,
         ins=insert_torun,
         rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load"),
-        three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load")
+        three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load"),
+        elc_load=elc_torun_load
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -363,6 +369,31 @@ rule estimate_library_complexity:
         }} > {log} 2>&1
         """
 
+
+# --------------------- load estimate library complexity --------------------------- #
+rule estimate_library_complexity_load:
+    input:
+        elc_torun
+    output:
+        os.path.join("bam.qc.dir", "estimate_library_complexity.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/estimate_library_complexity.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).library.complexity",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "sample_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
 
 # --------------------- Insert size metrics and histograms --------------------------- #
 
