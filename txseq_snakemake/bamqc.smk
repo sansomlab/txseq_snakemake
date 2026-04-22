@@ -115,7 +115,8 @@ rule full:
         three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load"),
         elc_load=elc_torun_load,
         alignment_sum_met_load=os.path.join("bam.qc.dir", "alignment_summary_metrics.load"),
-        ins_load=insert_toload
+        ins_load=insert_toload,
+        fraction_spliced_load=os.path.join("bam.qc.dir", "fraction_spliced.load"),
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -363,6 +364,31 @@ rule fraction_spliced:
                     >> {output}
         }} > {log} 2>&1
         """
+
+# --------------------- load fraction spliced --------------------------- #
+rule fraction_spliced_load:
+    input:
+        expand(os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced"),samp=S.samples.keys()),
+    output:
+        os.path.join("bam.qc.dir", "fraction_spliced.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "bam.qc.dir/fraction_spliced.log"
+    run:
+            statement = concatenate_and_load(
+                    infiles=list(input),
+                    outfile=str(output[0]),
+                    regex_filename=".*/.*/(.*).fraction.spliced",
+                    cat="sample_id",
+                    job_memory="8G",
+                    options='-i "sample_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
 
 # --------------------- Estimate library complexity --------------------------- #
 
