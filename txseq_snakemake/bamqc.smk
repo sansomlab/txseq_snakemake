@@ -15,6 +15,8 @@ from txseq_snakemake.functions_from_cgat import pipeline as P
 
 from txseq_snakemake.functions_from_cgat.pipeline.database import concatenate_and_load
 from txseq_snakemake.functions_from_cgat.pipeline.database import load
+from txseq_snakemake.functions_from_cgat.pipeline.database import to_table
+from txseq_snakemake.functions_from_cgat.database import fetch_DataFrame
 
 from txseq_snakemake.functions_from_cgat.pipeline.parameters import PARAMS
 
@@ -118,7 +120,9 @@ rule full:
         alignment_sum_met_load=os.path.join("bam.qc.dir", "alignment_summary_metrics.load"),
         ins_load=insert_toload,
         fraction_spliced_load=os.path.join("bam.qc.dir", "fraction_spliced.load"),
-        sample_load=os.path.join("bam.qc.dir", "samples.load")
+        sample_load=os.path.join("bam.qc.dir", "samples.load"),
+        qc_sum=os.path.join("bam.qc.dir", "qc_summary.txt"),
+        qc_summary_ld=os.path.join("bam.qc.dir", "qc_summary.load"),
 
 ## first pass of hisat. 
 rule geneset_flat:
@@ -570,6 +574,149 @@ rule load_sample_information:
                     infile=str(input[0]),
                     outfile=str(output[0]),
                     options='-i "sample_id"',
+                    job_memory="8G"
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+
+# --------------------- qc_summary_table --------------------------- #
+rule qc_summary_table:
+    input:
+        rna_seq_metrics_load=os.path.join("bam.qc.dir", "qc_rnaseq_metrics.load"),
+        three_prime_bias_load=os.path.join("bam.qc.dir", "three_prime_bias.load"),
+        elc_load=elc_torun_load,
+        alignment_sum_met_load=os.path.join("bam.qc.dir", "alignment_summary_metrics.load"),
+        ins_load=insert_toload,
+        fraction_spliced_load=os.path.join("bam.qc.dir", "fraction_spliced.load"),
+        sample_load=os.path.join("bam.qc.dir", "samples.load")
+    output:
+        os.path.join("bam.qc.dir", "qc_summary.txt")
+    params:
+        paired_data=config["paired"],
+        estimateLibraryComplexity=config["run"].get("estimateLibraryComplexity"),
+        sqlite_file=config["sqlite"].get("file")
+    threads: 1
+    resources:
+        **RESOURCES,
+
+    run:
+        # Some QC metrics are specific to paired end data
+        if params.paired_data:
+            exclude = []
+            paired_columns = '''PCT_READS_ALIGNED_IN_PAIRS
+                                        as pct_reads_aligned_in_pairs,
+                                MEDIAN_INSERT_SIZE
+                                        as median_insert_size,
+                            '''
+            pcat = "PAIR"
+    
+        else:
+            exclude = ["library_complexity", "insert_size_metrics"]
+            paired_columns = ''
+            pcat = "UNPAIRED"
+
+        print(paired_columns)
+        print(pcat)
+
+        if params.estimateLibraryComplexity and params.paired_data:
+            elc_columns = '''ESTIMATED_LIBRARY_SIZE as library_size,
+                         READ_PAIRS_EXAMINED as no_pairs,
+                         PERCENT_DUPLICATION as pct_duplication,
+            '''
+
+        else:
+            elc_columns = ''
+        
+        print(elc_columns)
+
+        # ESTIMATED_LIBRARY_SIZE as library_size,
+
+        tables = [to_table(x) for x in input
+                if to_table(x) not in exclude]
+
+        t1 = tables[0]
+
+        print("helloooo")
+        print(t1)
+
+        stat_start = '''select distinct samples.*,
+                                    fraction_spliced,
+                                    three_prime_bias
+                                       as three_prime_bias,
+                                    {paired_columns}
+                                    {elc_columns}
+                                    PCT_MRNA_BASES
+                                       as pct_mrna,
+                                    PCT_CODING_BASES
+                                       as pct_coding,
+                                    PCT_PF_READS_ALIGNED
+                                       as pct_reads_aligned,
+                                    TOTAL_READS
+                                       as total_reads,
+                                    PCT_ADAPTER
+                                       as pct_adapter,
+                                    PF_HQ_ALIGNED_READS*1.0/PF_READS
+                                       as pct_pf_reads_aligned_hq
+                   from {t1}
+                '''
+        
+        print(stat_start)
+        print("bleh")
+
+        stat_start=stat_start.format(
+           paired_columns=paired_columns,
+           elc_columns=elc_columns,
+           t1=t1,
+        )
+
+        print(stat_start)
+
+        join_stat = ""
+        for table in tables[1:]:
+            join_stat += "left join " + table + "\n"
+            if table == "alignment_summary_metrics":
+                join_stat += "on (" + t1 + ".sample_id=" + table + ".sample_id) "
+                join_stat += '''and alignment_summary_metrics.CATEGORY="{pcat}"\n''' 
+            else:
+                join_stat += "on " + t1 + ".sample_id=" + table + ".sample_id\n"
+
+        print(join_stat)
+        print("weeeeee")
+
+        join_stat=join_stat.format(
+            pcat=pcat
+        )
+
+        print(join_stat)
+
+        statement = "\n".join([stat_start, join_stat])
+
+        print(statement)
+
+        df = fetch_DataFrame(statement, params.sqlite_file)
+
+        print("wahey")
+
+        df.to_csv(output[0], sep="\t", index=False)
+
+
+rule load_qc_summary:
+    input:
+        os.path.join("bam.qc.dir", "qc_summary.txt")
+    output:
+        os.path.join("bam.qc.dir", "qc_summary.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("bam.qc.dir", "qc_summary.load.log")
+    run:
+            statement = load(
+                    infile=str(input[0]),
+                    outfile=str(output[0]),
                     job_memory="8G"
                 )
 

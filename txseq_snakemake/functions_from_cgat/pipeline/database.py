@@ -248,8 +248,8 @@ def concatenate_and_load(infiles,
                                           retry=retry)
 
     statement = ('''python -m txseq_snakemake.functions_from_cgat.tables \
-    --cat= {cat} \
-    --missing-value= {missing_value} \
+    --cat={cat} \
+    --missing-value={missing_value} \
     {cat_options} \
     {infiles} \
     | {load_statement} \
