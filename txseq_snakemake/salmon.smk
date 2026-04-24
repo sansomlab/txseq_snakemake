@@ -50,7 +50,9 @@ rule full:
         salmon_genes_tpms=os.path.join("salmon.dir", "salmon.genes.tpms.txt.gz"),
         salmon_transcripts_tpms=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz"),
         salmon_transcripts_tpms_load=os.path.join("salmon.dir", "salmon.transcripts.tpms.load"),
-        salmon_genes_tpms_load=os.path.join("salmon.dir", "salmon.genes.tpms.load")
+        salmon_genes_tpms_load=os.path.join("salmon.dir", "salmon.genes.tpms.load"),
+        tximeta=os.path.join("tximeta.dir","tximeta.RDS"),
+        transcript_infoload=os.path.join("transcript.info.load")
 
 rule quant:
     input:
@@ -236,6 +238,69 @@ rule loadSalmonGeneTPMs:
                     outfile=str(output[0]),
                     job_memory={params.job_mem},
                     options="-i gene_id"
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+rule tximeta:
+    input:
+        quant=expand(os.path.join("salmon.dir","{samp}","quant.genes.sf"), samp=S.samples.keys()),
+    output:
+        os.path.join("tximeta.dir","tximeta.RDS")
+    params:
+        geneset_path = os.path.join(config["txseq"].get("annotations"),
+                                "api.dir/txseq.geneset.gtf.gz"),
+        transcript_path = os.path.join(config["txseq"].get("annotations"),
+                                "api.dir/txseq.transcript.fa.gz"),
+        script=os.path.join(workflow.basedir,
+                "R","scripts",
+                "tximeta.R"),
+        samples=config["samples"],
+        tximeta_release=config["tximeta"].get("release"),
+        tximeta_genome=config["tximeta"].get("genome"),
+        tximeta_organism=config["tximeta"].get("organism"),
+        txseq_salmon_index=config["txseq"].get("salmon_index")
+
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("tximeta.dir","tximeta.log")
+    shell:
+        """
+        {{
+            Rscript {params.script} \
+                   --indexdir={params.txseq_salmon_index} \
+                   --salmondir=salmon.dir \
+                   --transcripts={params.transcript_path} \
+                   --geneset={params.geneset_path} \
+                   --organism={params.tximeta_organism} \
+                   --genomeversion={params.tximeta_genome} \
+                   --release={params.tximeta_release} \
+                   --samples={params.samples} \
+                   --outfile={output} 
+        }} > {log} 2>&1
+        """
+
+rule transcript_info:
+    input:
+       os.path.join(config["txseq"].get("annotations"),
+                          "api.dir/txseq.transcript.info.tsv.gz")
+    output:
+        os.path.join("transcript.info.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        "transcrit.info.load.log"
+    run:
+            statement = load(
+                    infile=input[0],
+                    outfile=str(output[0]),
+                    job_memory="15G",
+                    options='-i "gene_id" -i "transcript_id"'
                 )
 
             print("Running statement:\n", statement, flush=True)
