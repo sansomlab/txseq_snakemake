@@ -33,3 +33,7 @@ resources:
     time: "10:00:00"
     partition: short
     cpus_per_task: 4
+
+database:
+  url: sqlite:///csvdb
+  db: csvdb

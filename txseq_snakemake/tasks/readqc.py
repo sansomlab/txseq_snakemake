@@ -178,8 +178,8 @@ def buildFastQCSummaryStatus(infiles, outfile, datadir):
     results = []
     for infile in infiles:
         base_track = iotools.snip(os.path.basename(infile), ".sentinel")
-        filename = os.path.join(datadir,
-                                base_track + "*_fastqc",
+        filename = os.path.join(datadir,base_track,
+                                 "*_fastqc",
                                 "fastqc_data.txt")
         # there can be missing sections
         for fn in glob.glob(filename):
