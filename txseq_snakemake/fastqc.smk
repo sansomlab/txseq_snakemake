@@ -10,6 +10,11 @@ import numpy as np
 
 # import local pipeline utility functions
 import txseq_snakemake.tasks as T
+import txseq_snakemake.tasks.readqc as readqc
+
+from txseq_snakemake.functions_from_cgat.iotools import snip
+import txseq_snakemake.functions_from_cgat.experiment as E
+import txseq_snakemake.functions_from_cgat.iotools as IOTools
 
 RESOURCES = config.get("resources", {})
 
@@ -42,7 +47,8 @@ if config["fastqc"].get("limits") != "default":
 
 rule full:
     input:
-        expand(os.path.join("fastqc.dir", "{samp}.sentinel"), samp=S.fastqs.keys())
+        run_fastqc=expand(os.path.join("fastqc.dir", "{samp}.sentinel"), samp=S.fastqs.keys()),
+        summarise_fastqc="fastqc.summary.dir/fastqc_basic_statistics.tsv.gz"
 
 rule fastqc:
     input:
@@ -73,4 +79,37 @@ rule fastqc:
             touch {output}
         }} > {log} 2>&1
         """
+
+
+rule summariseFastQC:
+    input:
+        expand(os.path.join("fastqc.dir", "{samp}.sentinel"), samp=S.fastqs.keys())
+    output: 
+        "fastqc.summary.dir/fastqc_basic_statistics.tsv.gz"
+    params:
+
+    threads: RESOURCES["threads"]
+    resources:
+        **RESOURCES,
+    log:
+        "fastqc.summary.dir/fastqc_basic_statistics.log"
+    run:
+        all_files = []
+
+        for infile in input:
+
+            track = snip(infile, ".sentinel")
+            all_files.extend(glob.glob(
+                os.path.join(track, "*_fastqc",
+                            "fastqc_data.txt")))
+
+        dfs = readqc.read_fastqc(
+            all_files)
+
+        for key, df in dfs.items():
+            fn = re.sub("basic_statistics", key, output[0])
+            E.info("writing to {}".format(fn))
+            with IOTools.open_file(fn, "w") as outf:
+                df.to_csv(outf, sep="\t", index=True)
+
 
