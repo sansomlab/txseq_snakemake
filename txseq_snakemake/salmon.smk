@@ -52,7 +52,9 @@ rule full:
         salmon_transcripts_tpms_load=os.path.join("salmon.dir", "salmon.transcripts.tpms.load"),
         salmon_genes_tpms_load=os.path.join("salmon.dir", "salmon.genes.tpms.load"),
         tximeta=os.path.join("tximeta.dir","tximeta.RDS"),
-        transcript_infoload=os.path.join("transcript.info.load")
+        transcript_infoload=os.path.join("transcript.info.load"),
+        ngenes_detected=os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz"),
+        load_ngenes=os.path.join("qc.dir","qc_no_genes_salmon.load")
 
 rule quant:
     input:
@@ -294,13 +296,64 @@ rule transcript_info:
     resources:
         **RESOURCES,
     log:
-        "transcrit.info.load.log"
+        "transcript.info.load.log"
     run:
             statement = load(
                     infile=input[0],
                     outfile=str(output[0]),
                     job_memory="15G",
                     options='-i "gene_id" -i "transcript_id"'
+                )
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+rule num_genes_detected:
+    input:
+       os.path.join("salmon.dir", "salmon.genes.tpms.load")
+    output:
+        os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
+    params:
+        database=config["database"].get("db"),
+        script=os.path.join(workflow.basedir,
+                "python",
+                "salmon_no_genes_detected.py"),
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("qc.dir", "number.genes.detected.salmon.log")
+    run:
+            table = to_table(input[0])
+            outfile=os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
+
+            statement = f"""
+                python {params.script} \
+                   --database={params.database} \
+                   --table={table} \
+                   --outfile={outfile}
+                """
+
+            print("Running statement:\n", statement, flush=True)
+            shell(f"{statement} > {log} 2>&1")
+
+
+rule load_n_genes_detected:
+    input:
+        os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
+    output:
+        os.path.join("qc.dir","qc_no_genes_salmon.load")
+    params:
+    threads: 1
+    resources:
+        **RESOURCES,
+    log:
+        os.path.join("qc.dir","qc_no_genes_salmon.load.log")
+    run:
+            statement = load(
+                    infile=input[0],
+                    outfile=str(output[0]),
+                    options='-i "sample_id"'
                 )
 
             print("Running statement:\n", statement, flush=True)
