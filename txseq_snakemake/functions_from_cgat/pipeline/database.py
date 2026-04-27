@@ -96,8 +96,7 @@ def load(infile,
          options="",
          tablename=None,
          retry=True,
-         job_memory=None,
-         to_cluster=False):
+         job_memory=None):
     """import data from a tab-separated file into database.
 
     The table name is given by outfile without the
@@ -125,10 +124,7 @@ def load(infile,
         not be loaded at the first try, for example if a table is locked.
     job_memory : string
         Amount of memory to allocate for job. If unset, uses the global
-        default. Implies to_cluster=True.
-    to_cluster : bool
-        By default load jobs are not submitted to the cluster as they sometimes
-        become blocked. Setting this true will override this behavoir.
+        default.
     """
 
     if job_memory is None:
@@ -169,8 +165,7 @@ def concatenate_and_load(infiles,
                          retry=True,
                          tablename=None,
                          options="",
-                         job_memory=None,
-                         to_cluster=True):
+                         job_memory=None):
     """concatenate multiple tab-separated files and upload into database.
 
     The table name is given by outfile without the
@@ -215,10 +210,7 @@ def concatenate_and_load(infiles,
         Command line options for the `csv2db.py` script.
     job_memory : string
         Amount of memory to allocate for job. If unset, uses the global
-        default. Implies to_cluster=True.
-    to_cluster : bool
-        By default load jobs are not submitted to the cluster as they sometimes
-        become blocked. Setting this true will override this behavoir.
+        default. 
     """
     if job_memory is None:
         job_memory = "8G"
