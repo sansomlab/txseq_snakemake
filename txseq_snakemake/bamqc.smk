@@ -1,3 +1,54 @@
+"""==================
+Pipeline bam_qc.py
+==================
+
+Overview
+--------
+
+This pipeline computes QC statistic from BAM files. It uses the `Picard toolkit <https://broadinstitute.github.io/picard/>`_ and some custom scripts.
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`config_bamqc.yml` file.
+
+Inputs
+------
+
+The pipeline requires the following inputs
+
+#. samples.tsv: see :doc:`Configuration files<configuration>`
+#. bam files: the location of a folder containing the bam files named by "sample_id".
+#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+
+
+Requirements
+------------
+
+The following software is required:
+
+#. Picard
+
+Output files
+------------
+
+The pipeline produces the following outputs:
+
+#. Picard rnaseq metrics and independently calculated three prime bias: in the bam.qc.dir/rnaseq.metrics.dir
+#. Picard alignment summary metrics: in the bam.qc.dir/alignment.summary.metrics.dir
+#. Picard estimate of library complexity: in the bam.qc.dir/estimate.library.complexity.dir
+#. Picard insert size and histogram: in the bam.qc.dir/insert.size.metrics.dir
+#. Fraction of spliced reads: in the bam.qc.dir/fraction.spliced.dir
+#. An sqlite database: in a file named "csvdb" which contains tables of the QC metrics, with key metrics summarised in the "qc_summary" table.
+
+
+Code
+====
+
+"""
+
+
 import sys
 import shutil
 import os
@@ -23,6 +74,8 @@ from txseq_snakemake.functions_from_cgat.pipeline.parameters import PARAMS
 import txseq_snakemake.functions_from_cgat.tables 
 import txseq_snakemake.functions_from_cgat.csv2db 
 
+
+## Set up functions etc for pipeline
 PARAMS.update(config)
 
 RESOURCES = config.get("resources", {})
@@ -35,6 +88,7 @@ def bam_file(sample_id):
     bam_fl=os.path.join(config.get("bam_path"),sample_id+".bam")
     return(bam_fl)
 
+#get params from config
 strand=config.get("strand")
 print(strand)
 
@@ -105,6 +159,8 @@ else:
     insert_toload=""
 
 
+# --------------------- Pipeline --------------------------- #
+
 #rule all
 rule full:
     input:
@@ -124,7 +180,7 @@ rule full:
         qc_sum=os.path.join("bam.qc.dir", "qc_summary.txt"),
         qc_summary_ld=os.path.join("bam.qc.dir", "qc_summary.load"),
 
-## first pass of hisat. 
+## Get flat gene set
 rule geneset_flat:
     input:
         os.path.join(config["txseq"].get("annotations"),

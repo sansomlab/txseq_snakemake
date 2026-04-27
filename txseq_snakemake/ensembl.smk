@@ -1,3 +1,57 @@
+"""===================
+pipeline_ensembl.py
+===================
+
+Overview
+--------
+
+This pipeline post-processes Ensembl annotation files to prepare a set of reference files suitable for the analysis of RNA-sequencing data. We use here Ensembl sequences rather than Gencode sequences to avoid this issue: `Salmon issue 214 <https://github.com/COMBINE-lab/salmon/issues/214>`_ . Gencode and Ensembl GTF files are in any case equivalent.
+
+This pipeline prepares genome and annotation files that (a) only include records from PRIMARY contigs, i.e. chromosomes, mitochondrial sequences, unlocalised and unplaced scaffolds but not alternative (ALT) contigs and (b) exclude multi-placed transcript sequences by masking/excluding sequence/records from the Y chromosome PAR region. 
+
+It performs the following tasks:
+
+#. Makes a version of primary assembly FASTA file in which the Y chromosome PAR regions are hard masked.
+#. Makes a FASTA file containing the coding (cDNA) and non-coding (ncRNA) Ensembl transcripts from PRIMARY contigs that are not multi-placed transcript sequences.
+#. Makes a similarly filtered version of the Ensembl geneset GTF file.
+#. Makes a transcript -> gene map for use with sample
+#. Makes a transcript information table that contains information on transcript and gene names and biotypes.
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_ensembl.yml` file.
+
+Input files
+-----------
+
+The pipeline requires the following inputs
+
+#. The Ensembl primary assembly FASTA sequences
+#. The Ensembl geneset in GTF format
+#. The Ensembl cDNA FASTA sequences
+#. The Ensembl ncRNA FASTA sequences 
+#. PAR region definitions in BED format
+
+The location of these three files must be specified in the 'pipeline_ensembl.yml' file.
+
+Output files
+------------
+
+The pipeline creates an "api" folder with the following files for use by downstream pipelines:
+
+#. api.dir/txseq.genome.fa.gz: a copy of the Ensembl primary assembly in which Y PAR regions are hard masked
+#. api.dir/txseq.transcript.fa.gz: all records from the Ensembl cDNA and ncRNA transcript fasta files that are on primary contigs and not in the Y PAR region
+#. api.dir/txseq.geneset.gtf.gz: all records from the Ensembl gtf file that are on primary contigs and not in the Y PAR region
+#. api.dir/txseq.transcript.to.gene.map: a tab-seperated list of transcript_id -> gene_id mappings for use with Salmon
+#. api.dir/txseq.transcript.info.tsv.gz: a tab-seperated table of transcription information (including transcript_name, transcript_biotype, gene_name and gene_biotype)
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -11,10 +65,14 @@ import numpy as np
 # import local pipeline utility functions
 import txseq_snakemake.tasks as T
 
+# --------------------- Pipeline --------------------------- #
+
 #rule all
 rule full:
     input:
         os.path.join("ensembl.dir","api_dir","api_completed.txt")
+
+# --------------------- Extract and hard mask chromosome Y PAR regions --------------------------- #
 
 rule extract_YPAR:
     input: 
@@ -68,6 +126,9 @@ rule contigs:
         }} > {log} 2>&1
         """
 
+
+# --------------------- Filter transcripts --------------------------- #
+
 rule filtered_transcript_fasta:
     input:
         contigs=os.path.join("ensembl.dir","contigs.txt"),
@@ -93,6 +154,8 @@ rule filtered_transcript_fasta:
         }} > {log} 2>&1
         """
 
+# --------------------- Make filtered GTF --------------------------- #
+
 rule filtered_gtf:
         input:
             contigs=os.path.join("ensembl.dir","contigs.txt"),
@@ -117,6 +180,8 @@ rule filtered_gtf:
             }} > {log} 2>&1
             """
 
+# --------------------- Make transcript to gene map --------------------------- #
+
 rule transcript_to_gene_map:
     input: 
         os.path.join("ensembl.dir","filtered.geneset.gtf.gz")
@@ -133,6 +198,7 @@ rule transcript_to_gene_map:
         }} > {log} 2>&1
         """
 
+# --------------------- Get transcript info --------------------------- #
 rule transcript_info:
     input: 
         os.path.join("ensembl.dir","filtered.geneset.gtf.gz")
@@ -155,6 +221,7 @@ rule transcript_info:
         }} > {log} 2>&1
         """
 
+# --------------------- Tidy up results --------------------------- #
 rule api:
     input:
         pa=os.path.join("ensembl.dir","ypar.masked.primary.assembly.fa.gz"),

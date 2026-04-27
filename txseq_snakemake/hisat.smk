@@ -1,3 +1,51 @@
+"""=================
+Pipeline hisat.py
+=================
+
+Overview
+--------
+
+This pipeline quantifies gene expression from FASTQ files using `Hisat2 <http://daehwankimlab.github.io/hisat2/>`_. 
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_hisat.yml` file.
+
+
+Inputs
+------
+
+The pipeline requires the following inputs
+
+#. samples.tsv: see :doc:`Configuration files<configuration>`
+#. libraries.tsv: see :doc: `Configuration files<configuration>`
+#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+#. Hisat index: a hisat2 index built with :doc:`pipeline_hisat_index.py </pipelines/pipeline_hisat_index>`.
+
+
+Requirements
+------------
+
+The following software is required:
+
+#. Hisat2
+
+
+Output files
+------------
+
+The pipeline produces the following outputs:
+
+#. bam files: these are found in the hisat.dir sub-folder and are named by sample_id.
+
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -54,11 +102,14 @@ print("ss file is "+ss_file)
 
 RESOURCES = config.get("resources", {})
 
+
+# --------------------- Pipeline --------------------------- #
 #rule all
 rule full:
     input:
         expand(os.path.join("hisat.dir", "{samp}.bam"), samp=S.samples.keys())
 
+# --------------------- First pass --------------------------- #
 ## first pass of hisat. 
 rule first_pass:
     input:
@@ -94,6 +145,7 @@ rule first_pass:
         }} > {log} 2>&1
         """
 
+# --------------------- Collect splice sites --------------------------- #
 ## collect all novel splice sites files into one
 rule collect_sites:
     input:
@@ -118,6 +170,7 @@ rule collect_sites:
         }} > {log} 2>&1
         """
 
+# --------------------- Second pass --------------------------- #
 ## second pass of hisat. 
 rule second_pass:
     input:

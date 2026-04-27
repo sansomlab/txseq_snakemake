@@ -1,3 +1,55 @@
+"""==================
+Pipeline salmon.py
+==================
+
+Overview
+--------
+
+This pipeline quantifies gene expression from FASTQ files using `Salmon <https://github.com/COMBINE-lab/salmon>`_. 
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_salmon.yml` file.
+
+
+Inputs
+------
+
+The pipeline requires the following inputs
+
+#. samples.tsv: see :doc:`Configuration files<configuration>`
+#. libraries.tsv: see :doc: `Configuration files<configuration>`
+#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+#. Salmon index: the location of a salmon index built with :doc:`pipeline_salmon_index.py </pipelines/pipeline_salmon_index>`.
+
+
+Requirements
+------------
+
+The following software is required:
+
+#. Salmon
+
+Output files
+------------
+
+The pipeline produces the following outputs:
+
+#. per-sample salmon quantification results in the "salmon.dir" folder
+#. a csvdb sqlite database that contains tables of gene and transcript counts and TPMs
+
+.. note::
+
+    It is strongly recommended to parse the raw Salmon results using the `tximport <https://bioconductor.org/packages/release/bioc/html/tximport.html>`_ Bioconductor R package for downstream analysis.
+    
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -15,6 +67,8 @@ from txseq_snakemake.functions_from_cgat.pipeline.parameters import PARAMS
 from txseq_snakemake.functions_from_cgat.pipeline.database import to_table
 from txseq_snakemake.functions_from_cgat.pipeline.database import load
 
+#General pipeline prep
+
 PARAMS.update(config)
 RESOURCES = config.get("resources", {})
 
@@ -22,6 +76,7 @@ RESOURCES = config.get("resources", {})
 S = T.samples(sample_tsv = config.get("samples"),
                  library_tsv = config.get("libraries"))
 
+#function to get fq input files
 def fastq_input(sample_id):
     sample = S.samples[sample_id]
     if sample.paired:
@@ -32,16 +87,17 @@ def fastq_input(sample_id):
     return(fastq_input)
 
 
-
+#get salmon quant options
 salmon_quant_options = ''
 if not config.get('salmon_quant_options') is None:
         salmon_quant_options = config.get('salmon_quant_options')
-    
+
+#get salmon library type
 def libtype(sample_id):
     sample = S.samples[sample_id]
     return(sample.salmon_libtype)
 
-
+# --------------------- Pipeline --------------------------- #
 rule full:
     input:
         quant=expand(os.path.join("salmon.dir","{samp}","quant.sf"), samp=S.samples.keys()),
@@ -56,6 +112,7 @@ rule full:
         ngenes_detected=os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz"),
         load_ngenes=os.path.join("qc.dir","qc_no_genes_salmon.load")
 
+# --------------------- Run salmon quant --------------------------- #
 rule quant:
     input:
     output:
@@ -86,6 +143,7 @@ rule quant:
         }} > {log} 2>&1
         """
 
+# --------------------- Load into SQL --------------------------- #
 rule loadSalmonTranscriptQuant:
     input:
        quant=expand(os.path.join("salmon.dir","{samp}","quant.sf"), samp=S.samples.keys()),
@@ -137,7 +195,7 @@ rule loadSalmonGeneQuant:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
-
+# --------------------- Get TPMs --------------------------- #
 rule salmon_genes_tpms:
     input:
        os.path.join("salmon.dir", "salmon.genes.load")
@@ -198,7 +256,7 @@ rule salmon_transcripts_tpms:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
-
+# --------------------- Load TPMs into SQL --------------------------- #
 rule loadSalmonTranscriptTPMs:
     input:
        os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
@@ -245,6 +303,7 @@ rule loadSalmonGeneTPMs:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
+# --------------------- Run TXImeta --------------------------- #
 rule tximeta:
     input:
         quant=expand(os.path.join("salmon.dir","{samp}","quant.genes.sf"), samp=S.samples.keys()),
@@ -285,6 +344,7 @@ rule tximeta:
         }} > {log} 2>&1
         """
 
+# --------------------- Get transcript info --------------------------- #
 rule transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
@@ -308,6 +368,7 @@ rule transcript_info:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
+# --------------------- PGet n genes detected --------------------------- #
 rule num_genes_detected:
     input:
        os.path.join("salmon.dir", "salmon.genes.tpms.load")
@@ -337,7 +398,7 @@ rule num_genes_detected:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
-
+## --------------------- Pload n genes into SQL --------------------------- #
 rule load_n_genes_detected:
     input:
         os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")

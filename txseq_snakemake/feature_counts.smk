@@ -1,3 +1,50 @@
+"""=========================
+Pipeline feature_counts.py
+=========================
+
+Overview
+--------
+
+This pipeline counts the number of reads mapped to transcript/gene models. It uses the featureCounts algorithm from the `Subread package <https://subread.sourceforge.net>`_ .
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_feature_counts.yml` file.
+
+Inputs
+------
+
+The pipeline requires the following inputs
+
+#. samples.tsv: see :doc:`Configuration files<configuration>`
+#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+#. bam files: the location of a folder containing the bam files named by "sample_id".
+
+
+Requirements
+------------
+
+The following software is required:
+
+#. Subread
+
+
+Output files
+------------
+
+The pipeline produces the following outputs:
+
+#. per-sample results: in the "feature.counts.dir" subdirectory
+#. An sqlite database: in a file named "csvdb" which contains the per-gene counts.
+
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -44,12 +91,13 @@ if paired:
 else:
         paired_options = ""
 
+#get options for feature counts
 if config["featurecounts"].get("options") is None:
         featurecounts_options = ""
 else:
         featurecounts_options = config["featurecounts"].get("options")
 
-
+# --------------------- Pipeline --------------------------- #
 rule full:
     input:
         counts=expand(os.path.join("feature.counts.dir", "{samp}.counts.gz"),samp=S.samples.keys()),
@@ -61,7 +109,7 @@ rule full:
         n_genes_detected="feature.counts.dir/number.genes.detected.featurecounts.tsv.gz",
         load_n_genes_detected="feature.counts.dir/number.genes.detected.featurecounts.load"
 
-
+# --------------------- Run feature counts --------------------------- #
 rule count:
     input:
         
@@ -101,6 +149,7 @@ rule count:
         }} > {log} 2>&1
         """
 
+# --------------------- Put results in SQL database --------------------------- #
 rule loadCounts:
     input:
         expand(os.path.join("feature.counts.dir", "{samp}.counts.gz"),samp=S.samples.keys())
@@ -128,6 +177,7 @@ rule loadCounts:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
+# --------------------- Counts by gene --------------------------- #
 rule geneCounts:
     input:
         "feature.counts.dir/featurecounts.load"
@@ -157,6 +207,7 @@ rule geneCounts:
         print("Running statement:\n", statement, flush=True)
         shell(f"{statement} > {log} 2>&1")
 
+# --------------------- Counts by gene into SQL DB --------------------------- #
 rule load_gene_counts:
     input:
        "feature.counts.dir/featurecounts_counts.tsv.gz"
@@ -178,6 +229,7 @@ rule load_gene_counts:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
+# --------------------- Transcript info into SQL --------------------------- #
 rule load_transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
@@ -201,7 +253,7 @@ rule load_transcript_info:
             print("Running statement:\n", statement, flush=True)
             shell(f"{statement} > {log} 2>&1")
 
-
+# --------------------- Calculate n genes detected --------------------------- #
 rule n_genes_detected:
     input:
         "feature.counts.dir/featurecounts.load"
@@ -231,7 +283,7 @@ rule n_genes_detected:
         print("Running statement:\n", statement, flush=True)
         shell(f"{statement} > {log} 2>&1")
 
-
+# --------------------- n genes detected into SQL --------------------------- #
 rule loadNGenesDetected:
     input:
        "feature.counts.dir/number.genes.detected.featurecounts.tsv.gz"

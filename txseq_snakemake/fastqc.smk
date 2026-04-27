@@ -1,3 +1,60 @@
+"""==================
+Pipeline fastqc.py
+==================
+
+:Author: Stephen Sansom
+:Release: $Id$
+:Date: |today|
+:Tags: Python
+
+
+Overview
+--------
+
+The pipeline runs the `FASTQC quality control tool <https://www.bioinformatics.babraham.ac.uk/projects/fastqc/>`_ and post-processes the output for downstream-visualisation.
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_fastqc.yml` file.
+
+
+
+Inputs
+------
+
+The pipeline requires the following inputs
+
+#. samples.tsv: see :doc:`Configuration files<configuration>`
+#. libraries.tsv: see :doc: `Configuration files<configuration>`
+#. Optional custom lists of adaptors and contaminants. 
+
+Requirements
+------------
+
+The following software is required:
+
+#. FastQC
+
+Output files
+------------
+
+The pipeline produces the following outputs:
+
+#. fastqc results: for each FASTQ file in the "fastqc.dir" sub-folder
+#. An sqlite database: in a file named "csvdb" which contain summary tables of the fastqc results e.g. for plotting in R.
+
+.. note::
+    For quick visualations of the fastqc results it is recommended to use `MultiQC <https://multiqc.info>`_.
+
+
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -28,7 +85,7 @@ RESOURCES = config.get("resources", {})
 S = T.samples(sample_tsv = config.get("samples"),
         library_tsv = config.get("libraries"))
 
-
+#set up functions and general pipeline things
 def fastq_path(samp): 
     return(S.fastqs[samp]['fastq_path'])
 
@@ -66,6 +123,8 @@ fastqc_outputs=[
     "sequence_length_distribution"
 ]
 
+# --------------------- Pipeline --------------------------- #
+
 rule full:
     input:
         run_fastqc=expand(os.path.join("fastqc.dir", "{samp}.sentinel"), samp=S.fastqs.keys()),
@@ -75,6 +134,8 @@ rule full:
                module=fastqc_outputs),
         status_summary_stats_load="fastqc.summary.dir/fastqc_status_summary.load",
         load_meta="fastqc.dir/load.metadata.sentinel",
+
+# --------------------- Run fastqc --------------------------- #
 
 rule fastqc:
     input:
@@ -159,6 +220,8 @@ rule buildFastQCSummaryStatus:
             list(input),
             output[0],
             "fastqc.dir")
+
+# --------------------- Load results into SQL --------------------------- #
 
 rule loadFastQC:
     input:

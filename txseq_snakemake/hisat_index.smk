@@ -1,3 +1,50 @@
+"""=======================
+pipeline_hisat_index.py
+=======================
+
+Overview
+--------
+
+This pipeline makes a hisat2 HGFM index with transcripts.
+
+The pipeline is written using the `CGAT-core workflow management system <https://cgat-core.readthedocs.io/en/latest/>`_ .
+
+
+Configuration
+-------------
+
+The pipeline requires a configured :file:`pipeline_hisat_index.yml` file.
+
+
+
+Input files
+-----------
+
+For building the  index the pipeline requires:
+
+#. A gzip compressed FASTA file containing the genome primary assembly sequences.
+#. A gzip compressed GTF file containing the transcript information.
+
+The location of these files must be specified in the 'pipeline_index.yml' file.
+
+Requirements
+------------
+
+The following software is required:
+
+#. Hisat2
+
+
+Output files
+------------
+
+The pipeline generates a hisat2 HGFM index in the current folder.
+
+Code
+====
+
+"""
+
 import sys
 import shutil
 import os
@@ -13,11 +60,14 @@ import txseq_snakemake.tasks as T
 
 RESOURCES = config.get("resources", {})
 
+# --------------------- Pipeline --------------------------- #
+
 #rule all
 rule full:
     input:
         os.path.join(config["rundir"],"genome_tran.sentinel")
 
+# --------------------- Identify splice sites --------------------------- #
 ## splice sites. 
 rule splice_sites:
     input:
@@ -39,6 +89,7 @@ rule splice_sites:
         }} > {log} 2>&1
         """
 
+# --------------------- Identify exons --------------------------- #
 ## exons 
 rule exons:
     input:
@@ -60,6 +111,7 @@ rule exons:
         }} > {log} 2>&1
         """
 
+# --------------------- Build trnascriptome index --------------------------- #
 ## transcriptome index
 rule transcriptome_index:
     input:
