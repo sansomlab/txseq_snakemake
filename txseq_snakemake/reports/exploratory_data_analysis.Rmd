@@ -61,7 +61,6 @@ salmon_db =  file.path(txseq_run, "salmon/csvdb")
 # (b) the name of a variable present in the samples.tsv file
 plot_color="cell_type"    #e.g. "timepoint"
 plot_shape="group"    #e.g. "knockdown"
-plot_label="replicate"    #e.g."replicate"
 
 exclude <- c()
 
@@ -86,9 +85,9 @@ gse <- edata$gse
 #   e.g. providing to DESeqDataSetFromMatrix or to the edgeR or # limma functions without calculating an offset and 
 #   without using countsFromAbundance.
 
-# set a grouping variable which combines cell type and condition
 
-# set a grouping variable which combines cell type and condition
+
+################# set a grouping variable which combines your relevant columns
 colData(gse)$group <- factor(paste(colData(gse)$cell_type,colData(gse)$condition,sep="_"))
 
 dds <- DESeqDataSet(gse,
@@ -97,7 +96,7 @@ dds <- DESeqDataSet(gse,
 dds <- estimateSizeFactors(dds) 
 vstMat <- assay(varianceStabilizingTransformation(dds, blind=TRUE, fitType="local"))
 lq <- quantile(vstMat,0.25)
-filteredVSTMat <- vstMat[apply(vstMat,1,function(x) sum(x[x>lq])>=nreplicates),]
+filteredVSTMat <- vstMat[apply(vstMat,1,function(x) sum(x>lq)>=nreplicates),]
 
 # compute the PCA
 pca <- prcomp(t(filteredVSTMat))
@@ -122,11 +121,9 @@ d$no_genes <- (apply(assays(gse)$counts,2,function(x) length(x[x>=1])))
 
 d$id <- factor(rownames(d), levels=rownames(d)[order(d$counts)])
 d$group <- colData(gse)[rownames(d),plot_color]
-d$label <- colData(gse)[rownames(d),plot_label]
 d$shape <- colData(gse)[rownames(d),plot_shape]
 
-gp <- ggplot(d,aes_string("counts","no_genes",color="group", shape="shape", label="label"))
-gp <- gp + geom_text(nudge_y=160,color="grey")
+gp <- ggplot(d,aes(x=counts,y=no_genes,color=group, shape=shape))
 gp <- gp + geom_point(size=4) + xlab("total read counts") + ylab("no. genes expressed")
 gp <- gp + theme_bw()
 print(gp)
@@ -159,7 +156,7 @@ grid.arrange(grobs=gps, ncols=2, nrows=3)
 
 # filter the vstMatrix
 lq <- quantile(vstMat,0.25)
-filteredVSTMat <- vstMat[apply(vstMat,1,function(x) sum(x[x>lq])>=nreplicates),]
+filteredVSTMat <- vstMat[apply(vstMat,1,function(x) sum(x>lq)>=nreplicates),]
 print(dim(filteredVSTMat))
 ```
 
@@ -304,9 +301,9 @@ colnames(umap_frame) <- c("UMAP1", "UMAP2")
 
 at <- merge(umap_frame, colData(gse), by=0)
 
-gp <- ggplot(at, aes_string("UMAP1", "UMAP2", 
+gp <- ggplot(at, aes(x=UMAP1, x=UMAP2, 
                             color=plot_color, shape=plot_shape))
-gp <- gp + geom_text(aes_string(label=plot_label), nudge_x=.1, nudge_y=.1,color="grey")
+gp <- gp + geom_text(aes(label=.data[[plot_label]]), nudge_x=.1, nudge_y=.1,color="grey")
 gp <- gp + geom_point(size=2,alpha=1)
 gp <- gp + theme_bw()
 
@@ -339,7 +336,7 @@ tpms <- upperQuartileNormalise(raw_tpms)
 print(dim(tpms))
 log_tpms <- log2(tpms + 1)
 lq <- quantile(log_tpms,0.25)
-filt_tpms <- log_tpms[apply(log_tpms,1,function(x) sum(x[x>lq])>nreplicates),]
+filt_tpms <- log_tpms[apply(log_tpms,1,function(x) sum(x>lq)>nreplicates),]
 dim(filt_tpms)
 ```
 

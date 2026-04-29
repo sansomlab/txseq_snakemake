@@ -22,8 +22,8 @@ plotDensities <- function(countMatrix, phenoData, plot_color, plotTitle)
     
     mCD <- mCD[mCD$counts>min(mCD$counts),]
     
-    gp1 <- ggplot(mCD, aes_string("counts", group="sample_id", color="group")) + geom_density()
-    gp1 <- gp1 + ggtitle(plotTitle) + guides(color=FALSE)
+    gp1 <- ggplot(mCD, aes(x=counts, group=sample_id, color=group)) + geom_density()
+    gp1 <- gp1 + ggtitle(plotTitle) + guides(color="none")
     gp1 <- gp1 + theme_bw()
 
     
@@ -32,7 +32,7 @@ plotDensities <- function(countMatrix, phenoData, plot_color, plotTitle)
     rlem <- melt_mat(l2mat, phenoData,plot_color)
     rlem <- rlem[rlem$counts > min(rlem$counts),]
     
-    gp2 <- ggplot(rlem, aes_string("sample_id", "counts", group="sample_id", color="group"))
+    gp2 <- ggplot(rlem, aes(x=sample_id, y=counts, group=sample_id, color=group))
     gp2 <- gp2 + geom_boxplot(outlier.shape=NA)
     gp2 <- gp2 + ggtitle(plotTitle) + theme(axis.title.x=element_blank(),
                                             axis.text.x=element_blank(),
