@@ -50,7 +50,6 @@ fastqc_sqlite_database=  file.path(txseq_run,"fastqc/csvdb")
 # (a) a value recognised by ggplot OR
 # (b) the name of a variable present in the samples.tsv file
 plot_color="cell_type"    #e.g. "timepoint"
-plot_shape="condition"    #e.g. "knockdown"
 
 
 # Seperate plots should be made for each end and lane.
@@ -79,8 +78,8 @@ pbsq <- fetchFastQC(qc_metric="per_base_sequence_quality")
 if(!is.null(pbsq))
 {
 
-gp <- ggplot(pbsq, aes(x=Base, y=Mean, group=seq_id, color=.data[[plot_color]],
-                              shape=.data[[plot_shape]]))
+gp <- ggplot(pbsq, aes(x=Base, y=Mean, group=seq_id, color=.data[[plot_color]]
+                             ))
 
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula)) }
@@ -103,8 +102,8 @@ if(!is.null(psqs))
 {
 gp <- ggplot(psqs, aes(x=Quality, y=Count, 
                               group=seq_id, 
-                              color=plot_color, 
-                              shape=plot_shape))
+                              color=.data[[plot_color]]
+                             ))
 
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
@@ -124,9 +123,9 @@ pbsc <- fetchFastQC(qc_metric="per_base_sequence_content")
 
 plot_pbsc <- function(pbsc, nucleotide="A")
     {
-gp <- ggplot(pbsc, aes_string("Base", nucleotide, 
-                              group="seq_id", color=plot_color, 
-                              shape=plot_shape))
+gp <- ggplot(pbsc, aes(x=Base, y=.data[[nucleotide]],  
+                              group=seq_id, color=.data[[plot_color]]
+                       ))
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free") }
 gp <- gp + xlab("base position") + ylab(paste0("% ",nucleotide))
@@ -154,9 +153,8 @@ psgc <- fetchFastQC(qc_metric="per_sequence_gc_content")
 
 if(!is.null(psgc))
 {
-gp <- ggplot(psgc, aes_string("GC_Content", "Count", 
-                              group="seq_id", color=plot_color, 
-                              shape=plot_shape))
+gp <- ggplot(psgc, aes(x=GC_Content, y=Count, 
+                              group=seq_id, color=.data[[plot_color]]))
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + xlab("mean GC content (%)") + ylab("count")
@@ -176,9 +174,8 @@ pbnc <- fetchFastQC(qc_metric="per_base_n_content")
 
 if(!is.null(pbnc))
 {
-gp <- ggplot(pbnc, aes_string("Base", "N_Count", 
-                              group="seq_id", color=plot_color, 
-                              shape=plot_shape))
+gp <- ggplot(pbnc, aes(x=Base, y=N_Count, 
+                              group=seq_id, color=.data[[plot_color]]))
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + xlab("Position in read (bp)") + ylab("count")
@@ -198,9 +195,8 @@ sld <- fetchFastQC(qc_metric="sequence_length_distribution")
 
 if(!is.null(sld))
 {
-gp <- ggplot(sld, aes_string("seq_id", "Count", 
-                             fill=plot_color, 
-                             shape=plot_shape))
+gp <- ggplot(sld, aes(x=seq_id, y=Count, 
+                             fill=.data[[plot_color]]))
 gp <- gp + geom_col(alpha=0.7) 
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + xlab("seq_id") + ylab("number of sequences")
@@ -217,8 +213,8 @@ If the reads have not been pre-processed (i.e. trimmed) a single peak representi
 ```{r seq-length, fig.height=3, fig.width=8,  echo=FALSE, message=FALSE}
 if(!is.null(sld))
 {
-gp <- ggplot(sld, aes_string("Length","Count", 
-                             group="sample_id", color=plot_color, shape=plot_shape))
+gp <- ggplot(sld, aes(x=Length,y=Count, 
+                             group=sample_id, color=.data[[plot_color]]))
 gp <- gp + geom_line(alpha=0.75) + geom_point()
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + ylab("number of sequences") + xlab("Sequence Length (bp)")
@@ -247,10 +243,9 @@ sdl$Duplication_Level <- factor(as.character(sdl$Duplication_Level),
 
 plot_sdl <- function(sdl, sequences)
     {
-gp <- ggplot(sdl, aes_string("Duplication_Level", sequences,
-                             group="sample_id", 
-                             color=plot_color, 
-                             shape=plot_shape))
+gp <- ggplot(sdl, aes(x=Duplication_Level,y=.data[[sequences]]
+                             group=sample_id, 
+                             color=.data[[plot_color]]))
 gp <- gp + geom_line(alpha=0.75) + geom_point(size=2, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + xlab("Sequence Duplication Level") + ylab("%")
@@ -282,9 +277,8 @@ sdl2 <- sdl[sdl$Duplication_Level %in% c("1"),]
 sdl2$Percent_after_deduplication <- sdl2$Percentage_of_total / sdl2$Percentage_of_deduplicated * 100
 sdl2$sample <- factor(sdl2$sample, levels=sdl2$sample[rev(order(sdl2$Percent_after_deduplication))])
 
-gp <- ggplot(sdl2, aes_string("seq_id", "Percent_after_deduplication",
-                              group="seq_id", color=plot_color, 
-                              shape=plot_shape))
+gp <- ggplot(sdl2, aes(x=seq_id, y=Percent_after_deduplication,
+                              group=seq_id, color=.data[[plot_color]]))
 gp <- gp + geom_point(size=4, alpha=0.75)
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_y") }
 gp <- gp + theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -313,8 +307,8 @@ x <- ors %>% group_by(seq_id, end, lane) %>% summarise(total_pct_over_rep_seq=su
 x$o <- paste(x$seq_id,x$end,sep="_")
 x$o <- factor(x$o, levels=x$o[rev(order(x$total_pct_over_rep_seq))])
 
-gp <- ggplot(x, aes_string("o","total_pct_over_rep_seq",
-                              group="seq_id")) #, fill=plot_color, shape=plot_shape))
+gp <- ggplot(x, aes(x=o,y=total_pct_over_rep_seq,
+                              group=seq_id)) #, fill=plot_color, shape=plot_shape))
 gp <- gp + geom_col()
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_x") }
 gp <- gp + scale_x_discrete(breaks=x$o, labels=x$seq_id)
@@ -340,7 +334,7 @@ x <- ors %>% group_by(Possible_Source,end) %>% summarise(total_pct_over_rep_seq=
 x$o <- paste(x$Possible_Source,x$end,sep="_")
 x$o <- factor(x$o, levels=x$o[rev(order(x$total_pct_over_rep_seq))])
 
-gp <- ggplot(x, aes_string("o","total_pct_over_rep_seq"))
+gp <- ggplot(x, aes(x=o,y=total_pct_over_rep_seq))
 gp <- gp + geom_col()
 gp <- gp + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_x") }
@@ -377,7 +371,7 @@ x$o <- paste(x$adaptor, x$end, sep="-")
 x$o <- factor(x$o, levels=x$o[rev(order(x$mean_adaptor_content))])
 
 
-gp <- ggplot(x, aes_string("o","mean_adaptor_content"))
+gp <- ggplot(x, aes(x=o,y=mean_adaptor_content))
 gp <- gp + geom_col()
 gp <- gp + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 if(!is.null(wrap_formula)) { gp <- gp + facet_wrap(formula(wrap_formula), scales="free_x") }
@@ -413,7 +407,7 @@ x$o <- paste(x$Sequence, x$end, sep="-")
 x$o <- factor(x$o, levels=x$o[rev(order(x$mean_kmer_count))])
 
 
-gp <- ggplot(x, aes_string("o","mean_kmer_count"))
+gp <- ggplot(x, aes(x=o,y=mean_kmer_count))
 gp <- gp + geom_col()
 gp <- gp + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 gp <- gp + scale_x_discrete(breaks=x$o, labels=x$Sequence)
