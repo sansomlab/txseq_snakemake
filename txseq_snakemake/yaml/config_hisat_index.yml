@@ -31,9 +31,13 @@ geneset:
 KkmerLen: 31
 
   
+index_memory: 180000
+index_threads: 4
+index_runtime: 300
+
+# resource allocation
 resources:
-    threads: 8
-    mem_mb: 32000
-    time: "10:00:00"
+    threads: 1
+    mem_mb: 1500
+    runtime: 60
     partition: short
-    cpus_per_task: 4

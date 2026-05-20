@@ -127,9 +127,6 @@ fastqc_outputs=[
 
 rule full:
     input:
-        run_fastqc=expand(os.path.join("fastqc.dir", "{samp}.sentinel"), samp=S.fastqs.keys()),
-        summarise_fastqc=expand("fastqc.summary.dir/fastqc_{module}.tsv.gz",module=fastqc_outputs),
-        build_sum_status="fastqc.summary.dir/fastqc_status_summary.tsv.gz",
         all_stats_load=expand("fastqc.summary.dir/fastqc_{module}.load",
                module=fastqc_outputs),
         status_summary_stats_load="fastqc.summary.dir/fastqc_status_summary.load",

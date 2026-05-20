@@ -39,11 +39,10 @@ featurecounts:
     options:
 
 resources:
-    threads: 8
-    mem_mb: 8000
-    time: "10:00:00"
+    threads: 1
+    mem_mb: 1500
+    runtime: 60
     partition: short
-    cpus_per_task: 4
 
 database:
   url: sqlite:///csvdb

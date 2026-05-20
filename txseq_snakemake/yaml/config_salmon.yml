@@ -4,7 +4,6 @@
 
 # location of the local sqlite3 database
 sqlite:
-  file: csvdb
   himem: 10000M
 
 # path to the sample table
@@ -43,8 +42,9 @@ salmon:
   # options that will be passed to the salmon quant read-aligment call
   quant_options: --seqBias --gcBias --validateMapping --rangeFactorizationBins 4
   
-  memory: 24G
-  threads: 4
+  memory: 12000
+  threads: 8
+  runtime: 60
   
 tximeta:
   # e.g. "Mus musculus" or "Homo sapiens"
@@ -53,13 +53,14 @@ tximeta:
   release:
   # e.g. "GRCm39" or "GRCh38"
   genome:
+  memory: 12000
+  runtime: 60
 
 resources:
-    threads: 8
-    mem_mb: 8000
-    time: "10:00:00"
+    threads: 1
+    mem_mb: 500
+    runtime: 30
     partition: short
-    cpus_per_task: 1
 
 database:
   url: sqlite:///csvdb

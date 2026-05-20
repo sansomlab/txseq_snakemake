@@ -118,15 +118,16 @@ rule first_pass:
         os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
     params:
         index=config["txseq"].get("hisat_index"),
-    #    threads=config["hisat_thread"],
         opts=config["hisat"].get("options"),
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         known_ss=ss_file,
         novel_ss_outfile=os.path.join("hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt"),
-    threads: RESOURCES["threads"]
+    threads:
+        config["hisat_thread"],
     resources:
-        **RESOURCES,
+        mem_mb=config["hisat_memory"],
+        runtime=config["hisat_runtime"]
     log:
         os.path.join("hisat.dir","first.pass.dir", "{samp}.log")
     shell:
@@ -154,7 +155,7 @@ rule collect_sites:
         os.path.join("hisat.dir", "annotations","novel.splice.sites.txt")
     threads: 1
     resources:
-        cpus_per_task=1
+        **RESOURCES,
     log:
         os.path.join("hisat.dir", "annotations","novel.splice.sites.log")
     shell:
@@ -180,13 +181,14 @@ rule second_pass:
         os.path.join("hisat.dir", "{samp}.bam")
     params:
         index=config["txseq"].get("hisat_index"),
-    #    threads=config["hisat_thread"],
         opts=config["hisat"].get("options"),
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
-    threads: RESOURCES["threads"]
+    threads:
+        config["hisat_thread"],
     resources:
-        **RESOURCES,
+        mem_mb=config["hisat_memory"],
+        runtime=config["hisat_runtime"]
     log:
         os.path.join("hisat.dir", "{samp}.log")
     shell:

@@ -120,7 +120,7 @@ rule count:
         bam=lambda wildcards: bam_file(wildcards.samp),
         mktemp_template="ctmp.featureCounts.XXXXXXXXXX",
         geneset = os.path.join(config["txseq"].get("annotations"),
-                           "api.dir/txseq.geneset.gtf.gz"),
+                           "api_dir/txseq.geneset.gtf.gz"),
         featurecounts_strand=lambda wildcards: featurecounts_strand(wildcards.samp),
         featurecounts_options=featurecounts_options,
         paired_options=paired_options
@@ -157,7 +157,7 @@ rule loadCounts:
         "feature.counts.dir/featurecounts.load"
     params:
         job_memory=config["sqlite"].get("himem")
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:
@@ -188,7 +188,7 @@ rule geneCounts:
                 "python",
                 "feature_counts_table.py"),
         database=config["database"].get("db"),
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:
@@ -214,7 +214,7 @@ rule load_gene_counts:
     output:
         "feature.counts.dir/featurecounts_counts.load"
     params:
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:
@@ -233,11 +233,11 @@ rule load_gene_counts:
 rule load_transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
-                          "api.dir/txseq.transcript.info.tsv.gz")
+                          "api_dir/txseq.transcript.info.tsv.gz")
     output:
         os.path.join("transcript.info.load")
     params:
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:
@@ -264,7 +264,7 @@ rule n_genes_detected:
                 "python",
                 "feature_counts_no_genes_detected.py"),
         database=config["database"].get("db"),
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:
@@ -290,7 +290,7 @@ rule loadNGenesDetected:
     output:
         "feature.counts.dir/number.genes.detected.featurecounts.load"
     params:
-    threads: 1
+    threads: RESOURCES["threads"]
     resources:
         **RESOURCES,
     log:

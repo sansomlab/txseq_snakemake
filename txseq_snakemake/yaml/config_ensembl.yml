@@ -65,3 +65,9 @@ ncrna: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.ncrna.fa.gz
 #      /my/path/to/GRCm39.PAR.bed
 #
 par: /well/kir/mirror/ensembl/GRCh38.110.dir/GRCh38.p14.PAR.bed 
+
+resources:
+    threads: 1
+    mem_mb: 500
+    runtime: 60
+    partition: short

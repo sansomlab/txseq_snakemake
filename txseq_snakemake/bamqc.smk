@@ -184,7 +184,7 @@ rule full:
 rule geneset_flat:
     input:
         os.path.join(config["txseq"].get("annotations"),
-                            "api.dir/txseq.geneset.gtf.gz")
+                            "api_dir/txseq.geneset.gtf.gz")
     output:
         os.path.join("annotations.dir","geneset.flat.gz")
     params:
@@ -215,17 +215,16 @@ rule collectRnaSeqMetrics:
     input:
         os.path.join("annotations.dir","geneset.flat.gz")
     output:
-        os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics")
+        metric_out=os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics"),
+        coverage_out = os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics.cov.hist"),
     params:
         bam=lambda wildcards: bam_file(wildcards.samp),
         validation_stringency = config["picard"].get("validation_stringency"),
-        coverage_out = os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics.cov.hist"),
         chart_out = os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics.cov.pdf"),
         mktemp_template = "ctmp.CollectRnaSeqMetrics.XXXXXXXXXX",
         picard_cmd=config["picard"].get("cmd"),
         strand_param=strand_param,
         picard_options=picard_options_rnaseqmet
-
     threads: 1
     resources:
         **RESOURCES,
@@ -244,11 +243,11 @@ rule collectRnaSeqMetrics:
                    --VALIDATION_STRINGENCY {params.validation_stringency} \
                    {params.picard_options};
                    grep . $picard_out | grep -v "#" | head -n2 \
-                   > {output};
+                   > {output.metric_out};
                    grep . $picard_out \
                    | grep -A 102 "## HISTOGRAM" \
                    | grep -v "##" \
-                   > {params.coverage_out} || touch {params.coverage_out};
+                   > {output.coverage_out} || touch {output.coverage_out};
                    rm $picard_out;
         }} > {log} 2>&1
         """
@@ -340,7 +339,7 @@ rule three_prime_bias_load:
 rule alignment_summary_metrics:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api.dir/txseq.genome.fa.gz")
+                                      "api_dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics")
     params:
@@ -403,7 +402,7 @@ rule alignment_summary_metrics_load:
 rule fraction_spliced:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api.dir/txseq.genome.fa.gz")
+                                      "api_dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced")
     params:
@@ -458,7 +457,7 @@ rule fraction_spliced_load:
 rule estimate_library_complexity:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api.dir/txseq.genome.fa.gz")
+                                      "api_dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir/estimate.library.complexity.dir/",
                                 "{samp}.library.complexity")
@@ -521,7 +520,7 @@ rule estimate_library_complexity_load:
 rule insert_size_metrics_and_hists:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api.dir/txseq.genome.fa.gz")
+                                      "api_dir/txseq.genome.fa.gz")
     output:
         summary=os.path.join("bam.qc.dir/insert.size.metrics.dir/",
                                 "{samp}.insert.size.metrics.summary"),

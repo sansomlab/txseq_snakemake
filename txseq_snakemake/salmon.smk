@@ -116,25 +116,27 @@ rule full:
 rule quant:
     input:
     output:
-        os.path.join("salmon.dir","{samp}","quant.sf")
+        quant=os.path.join("salmon.dir","{samp}","quant.sf"),
+        quant_genes=os.path.join("salmon.dir","{samp}","quant.genes.sf")
     params:
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         salmon_quant_options=salmon_quant_options,
         libtype=lambda wildcards: libtype(wildcards.samp),
-        tx2gene = os.path.join(config["txseq"].get("annotations"),"api.dir/txseq.transcript.to.gene.map"),
+        tx2gene = os.path.join(config["txseq"].get("annotations"),"api_dir/txseq.transcript.to.gene.map"),
         txseq_salmon_index=config["txseq"].get("salmon_index"),
-        job_threads=config["salmon"].get("threads"),
         output_dir=os.path.join("salmon.dir","{samp}")
-    threads: 1
+    threads:
+        config["salmon"].get("threads"),
     resources:
-        **RESOURCES,
+        mem_mb=config["salmon"].get("memory"),
+        runtime=config["salmon"].get("runtime"),
     log:
                 os.path.join("salmon.dir","{samp}_quant.log")
     shell:
         """
         {{
             salmon quant -i {params.txseq_salmon_index} \
-                                -p {params.job_threads} \
+                                -p {threads} \
                                 -g {params.tx2gene} \
                                 {params.salmon_quant_options} \
                                 -l {params.libtype} \
@@ -311,9 +313,9 @@ rule tximeta:
         os.path.join("tximeta.dir","tximeta.RDS")
     params:
         geneset_path = os.path.join(config["txseq"].get("annotations"),
-                                "api.dir/txseq.geneset.gtf.gz"),
+                                "api_dir/txseq.geneset.gtf.gz"),
         transcript_path = os.path.join(config["txseq"].get("annotations"),
-                                "api.dir/txseq.transcript.fa.gz"),
+                                "api_dir/txseq.transcript.fa.gz"),
         script=os.path.join(workflow.basedir,
                 "R","scripts",
                 "tximeta.R"),
@@ -325,7 +327,8 @@ rule tximeta:
 
     threads: 1
     resources:
-        **RESOURCES,
+        runtime=config["tximeta"].get("runtime"),
+        mem_mb=config["tximeta"].get("memory"),
     log:
         os.path.join("tximeta.dir","tximeta.log")
     shell:
@@ -348,7 +351,7 @@ rule tximeta:
 rule transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
-                          "api.dir/txseq.transcript.info.tsv.gz")
+                          "api_dir/txseq.transcript.info.tsv.gz")
     output:
         os.path.join("transcript.info.load")
     params:
@@ -361,7 +364,6 @@ rule transcript_info:
             statement = load(
                     infile=input[0],
                     outfile=str(output[0]),
-                    job_memory="15G",
                     options='-i "gene_id" -i "transcript_id"'
                 )
 

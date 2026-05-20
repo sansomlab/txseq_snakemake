@@ -121,10 +121,12 @@ rule transcriptome_index:
         os.path.join(config["rundir"],"genome_tran.sentinel")
     params:
         primary_assembly=config["primary_assembly"],
-        outs=os.path.join(config["rundir"],"genome_tran")
-    threads: 16
+        outs=os.path.join(config["rundir"],"genome_tran"), 
+    threads: 
+        config["index_threads"]
     resources:
-        **RESOURCES,
+        mem_mb=config["index_memory"],
+        runtime=config["index_runtime"],
     log:
         "transcriptome_index.log"
     shell:

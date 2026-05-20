@@ -65,6 +65,8 @@ import numpy as np
 # import local pipeline utility functions
 import txseq_snakemake.tasks as T
 
+RESOURCES = config.get("resources", {})
+
 # --------------------- Pipeline --------------------------- #
 
 #rule all
@@ -79,6 +81,8 @@ rule extract_YPAR:
         config["par"]
     output: 
         os.path.join("ensembl.dir","Y.PAR.bed")
+    resources:
+        **RESOURCES,
     log: 
         os.path.join("ensembl.dir","Y.PAR.extract.log")
     shell:
@@ -95,6 +99,8 @@ rule hard_mask_YPAR:
         os.path.join("ensembl.dir","ypar.masked.primary.assembly.fa.gz")
     log: 
         os.path.join("ensembl.dir","Y.PAR.hard_mask.log")
+    resources:
+        **RESOURCES,
     params:
         primary_assembly=config["primary_assembly"],
         ypar_bed=os.path.join("ensembl.dir","Y.PAR.bed"),
@@ -117,6 +123,8 @@ rule contigs:
         os.path.join("ensembl.dir","contigs.txt")
     log: 
         os.path.join("ensembl.dir","contigs.log")
+    resources:
+        **RESOURCES,
     shell:
         """
         {{
@@ -137,6 +145,8 @@ rule filtered_transcript_fasta:
         os.path.join("ensembl.dir","filtered.transcripts.fa.gz")
     log:
         os.path.join("ensembl.dir","filtered.transcripts.log")
+    resources:
+        **RESOURCES,
     params:
         cdna=config["cdna"],
         ncrna=config["ncrna"],
@@ -164,6 +174,8 @@ rule filtered_gtf:
             os.path.join("ensembl.dir","filtered.geneset.gtf.gz")
         log:
             os.path.join("ensembl.dir","filtered.geneset.gtf.log")
+        resources:
+            **RESOURCES,
         params:
             script=os.path.join(workflow.basedir,
                         "python",
@@ -189,6 +201,8 @@ rule transcript_to_gene_map:
         os.path.join("ensembl.dir","transcript_to_gene_map")
     log:
         os.path.join("ensembl.dir","transcript_to_gene_map.log")
+    resources:
+        **RESOURCES,
     shell:
         """
         {{
@@ -206,6 +220,8 @@ rule transcript_info:
         os.path.join("ensembl.dir","transcript.info.tsv.gz")
     log:
         os.path.join("ensembl.dir","transcript.info.log")
+    resources:
+        **RESOURCES,
     params:
             script=os.path.join(workflow.basedir,
                         "python",
@@ -233,6 +249,8 @@ rule api:
         os.path.join("ensembl.dir","api_dir","api_completed.txt")
     log:
         txinfo=os.path.join("ensembl.dir","api_completed.log")
+    resources:
+        **RESOURCES,
     params:
         rundir=config["rundir"],
         usedir=os.path.join(config["rundir"],"ensembl.dir","api_dir"),

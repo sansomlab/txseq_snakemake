@@ -57,5 +57,6 @@ kmerLen: 31
 resources:
   
   # resource allocation
-  memory: 32G
+  mem_mb: 30000
   threads: 12
+  runtime: 300
