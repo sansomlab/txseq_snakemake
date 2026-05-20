@@ -1,25 +1,26 @@
 # Pipeline pipeline_bam_qc.py configuration file
 # =============================================
 #
-rundir: 
+rundir: ~/devel/testing_txseq_snakemake/full_fqs/bamqc/
 # select tasks to run
 run:
 
-  estimateLibraryComplexity: False
+  estimateLibraryComplexity: True
 
 # location of the local sqlite3 database
 sqlite:
   file: csvdb
   himem: 10000M
 
-strand:
-paired: 
 
+strand: None
+paired: True
+ 
 # path to the sample table
-samples: ../samples.tsv
+samples: /users/sansom/wrf380/devel/testing_txseq_snakemake/full_fqs/samples.tsv
 
 # path to the folder containing the bam files
-bam_path: ../hisat/hisat.dir/
+bam_path:  /users/sansom/wrf380/devel/testing_txseq_snakemake/full_fqs/hisat/hisat.dir/
 
 txseq:
   # Path to the location where the "txseq ensembl" pipeline was run
@@ -32,21 +33,15 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir
   #
-  annotations: 
+  annotations:  /users/sansom/wrf380/devel/testing_txseq_snakemake/ensembl_pipeline/ensembl.dir
   
 picard:
 
-    cmd: java -jar $EBROOTPICARD/picard.jar
+    cmd: java -Xmx9g -jar $EBROOTPICARD/picard.jar
     # Note that strand specificity is set automatically according to
     # the general "strand" option defined above.
 
     validation_stringency: SILENT
-
-    # Number of parallel processes.
-    threads: 3
-
-    # Set the total memory allocated across all threads *in megabytes*.
-    memory: 8G
 
     # Additional options to individual picard modules.
     alignmentsummarymetrics_options:
@@ -55,11 +50,9 @@ picard:
     insertsizemetric_options:
 
 resources:
-    threads: 8
-    mem_mb: 8000
-    time: "10:00:00"
+    mem_mb: 12000
+    runtime: 120
     partition: short
-    cpus_per_task: 4
 
 database:
-  url: sqlite:///my_database.db
+  url: sqlite:///csvdb
