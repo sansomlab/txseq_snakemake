@@ -124,7 +124,7 @@ fastqc_outputs=[
 ]
 
 # --------------------- Pipeline --------------------------- #
-
+localrules: full
 rule full:
     input:
         all_stats_load=expand("fastqc.summary.dir/fastqc_{module}.load",

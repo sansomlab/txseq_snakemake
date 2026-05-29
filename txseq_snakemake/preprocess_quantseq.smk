@@ -72,6 +72,7 @@ SAMPLE_TO_FASTQ = dict(zip(fqs["sample_id"], fqs["fastq_path"]))
 SAMPLES = fqs["sample_id"].tolist()
 
 # --------------------- Pipeline --------------------------- #
+localrules: full
 rule full:
     input:
         expand("cutadapt.dir/{sample}.trimmed.fq.gz", sample=SAMPLES)

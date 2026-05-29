@@ -160,7 +160,7 @@ else:
 
 
 # --------------------- Pipeline --------------------------- #
-
+localrules: full
 #rule all
 rule full:
     input:
@@ -225,9 +225,10 @@ rule collectRnaSeqMetrics:
         picard_cmd=config["picard"].get("cmd"),
         strand_param=strand_param,
         picard_options=picard_options_rnaseqmet
-    threads: 1
+    threads: config["collect_rnaseqmetrics_threads"]
     resources:
-        **RESOURCES,
+        mem_mb=config["collect_rnaseqmetrics_memory"],
+        runtime=config["collect_rnaseqmetrics_runtime"],
     log:
         os.path.join("bam.qc.dir", "rnaseq.metrics.dir","{samp}.rnaseq.metrics.log")
     shell:

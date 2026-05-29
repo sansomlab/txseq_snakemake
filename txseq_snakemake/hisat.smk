@@ -104,6 +104,7 @@ RESOURCES = config.get("resources", {})
 
 
 # --------------------- Pipeline --------------------------- #
+localrules: full
 #rule all
 rule full:
     input:

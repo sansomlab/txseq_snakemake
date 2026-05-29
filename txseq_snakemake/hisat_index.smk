@@ -61,7 +61,7 @@ import txseq_snakemake.tasks as T
 RESOURCES = config.get("resources", {})
 
 # --------------------- Pipeline --------------------------- #
-
+localrules: full
 #rule all
 rule full:
     input:

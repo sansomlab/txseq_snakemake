@@ -62,6 +62,7 @@ RESOURCES = config.get("resources", {})
 source = "--gencode" if config["fasta_source"] == "gencode" else ""
 
 # --------------------- Pipeline --------------------------- #
+localrules: full
 rule full:
     input:
         genome_fasta=config["genome_fasta"],

@@ -98,6 +98,7 @@ else:
         featurecounts_options = config["featurecounts"].get("options")
 
 # --------------------- Pipeline --------------------------- #
+localrules: full
 rule full:
     input:
         counts=expand(os.path.join("feature.counts.dir", "{samp}.counts.gz"),samp=S.samples.keys()),

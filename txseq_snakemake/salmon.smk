@@ -98,6 +98,7 @@ def libtype(sample_id):
     return(sample.salmon_libtype)
 
 # --------------------- Pipeline --------------------------- #
+localrules: full
 rule full:
     input:
         quant=expand(os.path.join("salmon.dir","{samp}","quant.sf"), samp=S.samples.keys()),
