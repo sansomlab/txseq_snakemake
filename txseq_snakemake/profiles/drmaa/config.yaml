@@ -1,0 +1,11 @@
+executor: drmaa
+drmaa-args: " -p {resources.partition} --mem={resources.mem_mb} --cpus-per-task={threads} --time=00:{resources.runtime}:00"
+jobs: 40
+default-resources:
+  mem_mb: 1000
+  runtime: 5
+  partition: short
+latency-wait: 30
+printshellcmds: true
+cores: all
+local-cores: 1
