@@ -1,6 +1,6 @@
 executor: drmaa
 drmaa-args: " -p {resources.partition} --mem={resources.mem_mb} --cpus-per-task={threads} --time=00:{resources.runtime}:00"
-jobs: 40
+jobs: 50
 default-resources:
   mem_mb: 1000
   runtime: 5
