@@ -123,7 +123,7 @@ rule quant:
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         salmon_quant_options=salmon_quant_options,
         libtype=lambda wildcards: libtype(wildcards.samp),
-        tx2gene = os.path.join(config["txseq"].get("annotations"),"api_dir/txseq.transcript.to.gene.map"),
+        tx2gene = os.path.join(config["txseq"].get("annotations"),"api.dir/txseq.transcript.to.gene.map"),
         txseq_salmon_index=config["txseq"].get("salmon_index"),
         output_dir=os.path.join("salmon.dir","{samp}")
     threads:
@@ -314,9 +314,9 @@ rule tximeta:
         os.path.join("tximeta.dir","tximeta.RDS")
     params:
         geneset_path = os.path.join(config["txseq"].get("annotations"),
-                                "api_dir/txseq.geneset.gtf.gz"),
+                                "api.dir/txseq.geneset.gtf.gz"),
         transcript_path = os.path.join(config["txseq"].get("annotations"),
-                                "api_dir/txseq.transcript.fa.gz"),
+                                "api.dir/txseq.transcript.fa.gz"),
         script=os.path.join(workflow.basedir,
                 "R","scripts",
                 "tximeta.R"),
@@ -352,7 +352,7 @@ rule tximeta:
 rule transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
-                          "api_dir/txseq.transcript.info.tsv.gz")
+                          "api.dir/txseq.transcript.info.tsv.gz")
     output:
         os.path.join("transcript.info.load")
     params:

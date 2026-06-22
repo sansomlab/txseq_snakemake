@@ -72,7 +72,7 @@ localrules: full
 #rule all
 rule full:
     input:
-        os.path.join("ensembl.dir","api_dir","api_completed.txt")
+        os.path.join("ensembl.dir","api.dir","api.completed.txt")
 
 # --------------------- Extract and hard mask chromosome Y PAR regions --------------------------- #
 
@@ -246,14 +246,14 @@ rule api:
         tx2gene=os.path.join("ensembl.dir","transcript_to_gene_map"),
         txinfo=os.path.join("ensembl.dir","transcript.info.tsv.gz")
     output:
-        os.path.join("ensembl.dir","api_dir","api_completed.txt")
+        os.path.join("ensembl.dir","api.dir","api.completed.txt")
     log:
-        txinfo=os.path.join("ensembl.dir","api_completed.log")
+        txinfo=os.path.join("ensembl.dir","api.completed.log")
     resources:
         **RESOURCES,
     params:
         rundir=config["rundir"],
-        usedir=os.path.join(config["rundir"],"ensembl.dir","api_dir"),
+        usedir=os.path.join(config["rundir"],"ensembl.dir","api.dir"),
         script=os.path.join(workflow.basedir,
                         "python",
                         "ensembl_api.py"),

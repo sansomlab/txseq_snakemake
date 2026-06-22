@@ -121,7 +121,7 @@ rule count:
         bam=lambda wildcards: bam_file(wildcards.samp),
         mktemp_template="ctmp.featureCounts.XXXXXXXXXX",
         geneset = os.path.join(config["txseq"].get("annotations"),
-                           "api_dir/txseq.geneset.gtf.gz"),
+                           "api.dir/txseq.geneset.gtf.gz"),
         featurecounts_strand=lambda wildcards: featurecounts_strand(wildcards.samp),
         featurecounts_options=featurecounts_options,
         paired_options=paired_options
@@ -234,7 +234,7 @@ rule load_gene_counts:
 rule load_transcript_info:
     input:
        os.path.join(config["txseq"].get("annotations"),
-                          "api_dir/txseq.transcript.info.tsv.gz")
+                          "api.dir/txseq.transcript.info.tsv.gz")
     output:
         os.path.join("transcript.info.load")
     params:

@@ -133,12 +133,12 @@ else:
 if paired and estimate_lib_comp:
     elc_torun=expand(os.path.join("bam.qc.dir/estimate.library.complexity.dir/","{samp}.library.complexity"),samp=S.samples.keys())
 else:
-    elc_torun=""
+    elc_torun=[]
 
 if paired and estimate_lib_comp:
     elc_torun_load=os.path.join("bam.qc.dir", "estimate_library_complexity.load")
 else:
-    elc_torun_load=""
+    elc_torun_load=[]
 
 #establish whether to run insert size metrics
 
@@ -150,13 +150,13 @@ if paired:
                     expand(os.path.join("bam.qc.dir/insert.size.metrics.dir/",
                                 "{samp}.insert.size.metrics.histogram"),samp=S.samples.keys())]
 else:
-    insert_torun=""
+    insert_torun=[]
 
 if paired:
     insert_toload=[os.path.join("bam.qc.dir", "insert.size.metrics_hist.load"),
     os.path.join("bam.qc.dir", "insert.size.metrics_sum.load")]
 else:
-    insert_toload=""
+    insert_toload=[]
 
 
 # --------------------- Pipeline --------------------------- #
@@ -178,13 +178,13 @@ rule full:
         fraction_spliced_load=os.path.join("bam.qc.dir", "fraction_spliced.load"),
         sample_load=os.path.join("bam.qc.dir", "samples.load"),
         qc_sum=os.path.join("bam.qc.dir", "qc_summary.txt"),
-        qc_summary_ld=os.path.join("bam.qc.dir", "qc_summary.load"),
+        qc_summary_ld=os.path.join("bam.qc.dir", "qc_summary.load")
 
 ## Get flat gene set
 rule geneset_flat:
     input:
         os.path.join(config["txseq"].get("annotations"),
-                            "api_dir/txseq.geneset.gtf.gz")
+                            "api.dir/txseq.geneset.gtf.gz")
     output:
         os.path.join("annotations.dir","geneset.flat.gz")
     params:
@@ -340,7 +340,7 @@ rule three_prime_bias_load:
 rule alignment_summary_metrics:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api_dir/txseq.genome.fa.gz")
+                                      "api.dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir", "alignment.summary.metrics.dir","{samp}.alignment.summary.metrics")
     params:
@@ -403,7 +403,7 @@ rule alignment_summary_metrics_load:
 rule fraction_spliced:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api_dir/txseq.genome.fa.gz")
+                                      "api.dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir/fraction.spliced.dir/","{samp}.fraction.spliced")
     params:
@@ -458,7 +458,7 @@ rule fraction_spliced_load:
 rule estimate_library_complexity:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api_dir/txseq.genome.fa.gz")
+                                      "api.dir/txseq.genome.fa.gz")
     output:
         os.path.join("bam.qc.dir/estimate.library.complexity.dir/",
                                 "{samp}.library.complexity")
@@ -521,7 +521,7 @@ rule estimate_library_complexity_load:
 rule insert_size_metrics_and_hists:
     input:
         reference_sequence = os.path.join(config["txseq"].get("annotations"),
-                                      "api_dir/txseq.genome.fa.gz")
+                                      "api.dir/txseq.genome.fa.gz")
     output:
         summary=os.path.join("bam.qc.dir/insert.size.metrics.dir/",
                                 "{samp}.insert.size.metrics.summary"),
