@@ -1,0 +1,32 @@
+[project]
+name = "txseq-snakemake"
+version = "0.1.0"
+description = "Pipelines for computational analysis of transcriptome sequencing data"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Tarrion Baird" },
+]
+
+dependencies = [
+    "apsw",
+    "biopython",
+    "numpy",
+    "pandas",
+    "PyYAML",
+    "snakemake>=9",
+    "snakemake-executor-plugin-slurm",
+    "snakemake-executor-plugin-drmaa",
+    "sqlalchemy",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Repository = "https://github.com/sansomlab/txseq_snakemake"
+
+[tool.hatch.build.targets.wheel]
+packages = ["txseq_snakemake"]

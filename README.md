@@ -9,4 +9,16 @@ HISAT2 and quantitation with `featureCounts` are provided along with a more-mode
 Salmon and tximeta. Template reports for sequence quality, post-mapping qc analysis, exploratory data analysis and differential 
 gene expression are provided as Rmarkdown notebooks.
 
+## Installation
+
+### Install Python Dependencies 
+
+```bash
+# Create a python virtual environment Ideally with uv on it 
+python -m venv txseq_smk_venv
+source ./txseq_smk_venv/bin/activate
+git clone https://github.com/sansomlab/txseq_snakemake.git
+cd txseq_snakemake
+uv pip install -e . 
+```
 
