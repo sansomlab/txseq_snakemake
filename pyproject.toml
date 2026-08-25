@@ -2,7 +2,7 @@
 name = "txseq-snakemake"
 version = "0.1.0"
 description = "Pipelines for computational analysis of transcriptome sequencing data"
-readme = "readme"
+readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
