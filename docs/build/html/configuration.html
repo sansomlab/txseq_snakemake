@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Configuration Files &#8212; TXSeq 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mouse HSCs example" href="mouse_hscs_example.html" />
+    <link rel="prev" title="Building transcriptome indexes" href="buildingTranscriptomeIndexes.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="configuration-files">
+<h1>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this heading">¶</a></h1>
+<section id="defining-samples-and-sequencing-files">
+<h2>Defining samples and sequencing files<a class="headerlink" href="#defining-samples-and-sequencing-files" title="Permalink to this heading">¶</a></h2>
+<p>Txseq requires two tab-seperated files to be provided that specify the sample and sequencing library information. It is not necessary to rename or merge FASTQ files before running txseq: the pipelines will automatically combine sequence data for the same samples and label outputs by the given “sample_id”.</p>
+<section id="samples-tsv">
+<h3>(1) “samples.tsv”<a class="headerlink" href="#samples-tsv" title="Permalink to this heading">¶</a></h3>
+<p>A tab-separated text file with the following mandatory columns:</p>
+<ul class="simple">
+<li><p>“sample_id”: a unique identifier for the sample</p></li>
+<li><p>“type”: either ‘SE’ for single end or ‘PE’ for paired end</p></li>
+<li><p>“strand”: either ‘none’, ‘forward’ or ‘reverse’ (see note below).</p></li>
+</ul>
+<p>Sample metadata can also be stored in this table for downstream analysis for
+example with columns such as:</p>
+<ul class="simple">
+<li><p>“condition”</p></li>
+<li><p>“replicate”</p></li>
+<li><p>“age”</p></li>
+<li><p>“sex”</p></li>
+<li><p>“genotype”</p></li>
+<li><p>“batch”</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>strand values of ‘none’, ‘forward’ and ‘reverse’ will be used to set parameter values in txseq pipelines as follows:</p>
+<ul class="simple">
+<li><p>“none”:  data is treated as unstranded. This is appropriate for e.g. Illumina Truseq and most single-cell protocols. :</p>
+<ul>
+<li><p>hisat: default, i.e. –rna-strandedness not set</p></li>
+<li><p>cufflinks: fr-secondstrand</p></li>
+<li><p>HT-seq: no</p></li>
+<li><p>PICARD: NONE</p></li>
+<li><p>SALMON: (I)U</p></li>
+</ul>
+</li>
+<li><p>“forward”: The first read (if paired) or read (if single end) corresponds to the transcript strand e.g. Directional Illumina, Standard Solid.</p>
+<ul>
+<li><p>hisat: SE: F, PE: FR</p></li>
+<li><p>cufflinks: fr-secondstrand</p></li>
+<li><p>HT-seq: yes</p></li>
+<li><p>PICARD: FIRST_READ_TRANSCRIPTION_STRAND</p></li>
+<li><p>SALMON: (I)SF</p></li>
+</ul>
+</li>
+<li><p>“reverse”: The first read (if paired) or read (if single end) corresponds to the reverse complement of the  transcript strand e.g. dUTP, NSR, NNSR</p>
+<ul>
+<li><p>hisat: SE: R, PE: RF</p></li>
+<li><p>cufflinks: fr-firststrand</p></li>
+<li><p>HT-seq: reverse</p></li>
+<li><p>PICARD: SECOND_READ_TRANSCRIPTION_STRAND</p></li>
+<li><p>SALMON: (I)SR</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>An example samples.tsv file is shown below:</p>
+</section>
+<section id="libraries-tsv-optional">
+<h3>(2) “libraries.tsv” (optional)<a class="headerlink" href="#libraries-tsv-optional" title="Permalink to this heading">¶</a></h3>
+<p>Required when starting from FASTQ files.</p>
+<p>A tab-separated text file with the following mandatory columns</p>
+<ul class="simple">
+<li><p>“sample_id”: these values must match those in the sample_id in the samples.tsv</p></li>
+<li><p>“lane”: an integer representing the sequencing lane/unit.</p></li>
+<li><p>“flow_cell”: an integer representing the flow cell.</p></li>
+<li><dl class="simple">
+<dt>“fastq_path”: For SE libraries, the fastq file path. For PE libraries: the</dt><dd><p>read 1 fastq: the path for read 2 is imputed by the pipelines.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When samples have been sequenced across multiple lanes, use one line per lane. Comma-separated lane and fastq_path values are not supported. Quality control analysis is performed at lane level; lanes will be aggregated for quantitation.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Paired-end fastq files must end with “1|2.fastq.gz” or “fastq.1|2.gz”. For paired end samples the Read 1 and Read 2 FASTQ files for the same lane must be located in the same folder.</p>
+</div>
+<p>An example libraries.tsv file is shown below:</p>
+</section>
+</section>
+<section id="configuring-and-running-pipelines">
+<h2>Configuring and running pipelines<a class="headerlink" href="#configuring-and-running-pipelines" title="Permalink to this heading">¶</a></h2>
+<p>The txseq pipelines are written using <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/">snakemake</a> pipelining system. Here we illustrate how the pipelines can be run using the salmon pipeline as an example.</p>
+<p>Following installation, to find the available pipelines run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">txseq</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>Next generate a configuration yml file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">txseq</span> <span class="n">salmon</span> <span class="n">config</span> <span class="o">-</span><span class="n">v5</span>
+</pre></div>
+</div>
+<p>To fully run e.g. the txseq salmon pipeline the following command is used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">txseq</span> <span class="n">salmon</span> <span class="n">make</span> <span class="n">full</span> <span class="o">-</span><span class="n">v5</span> <span class="o">-</span><span class="n">p20</span>
+</pre></div>
+</div>
+<p>The “-v5” flag sets the verbosity level to the maximum level and the “-p20” flag tells the pipeline to launch upto 20 jobs in parallel: this number should be set according to the sample number and availability of compute resources.</p>
+<p>It is also possible to run individual pipeline tasks to get a feel of what each one is doing. Individual tasks can then be executed by name, e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">txseq</span> <span class="n">salmon</span> <span class="n">make</span> <span class="n">quant</span> <span class="o">-</span><span class="n">v5</span> <span class="o">-</span><span class="n">p20</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If any upstream tasks are out of date they will automatically be run before the named task is executed.</p>
+</div>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
+<p>To get started please see the <a class="reference internal" href="mouse_hscs_example.html"><span class="doc">Mouse hscs example</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">TXSeq</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Workflow Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genomesAndAnnotations.html">Genomes and Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="buildingTranscriptomeIndexes.html">Building transcriptome indexes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mouse_hscs_example.html">Mouse HSCs example</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="buildingTranscriptomeIndexes.html" title="previous chapter">Building transcriptome indexes</a></li>
+      <li>Next: <a href="mouse_hscs_example.html" title="next chapter">Mouse HSCs example</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2026, Tarrion Baird, Stephen Sansom.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/configuration.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
