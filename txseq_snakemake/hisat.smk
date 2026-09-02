@@ -204,9 +204,9 @@ rule second_pass:
                         --novel-splicesite-infile {input.splice_file} \
                         {params.strand_param} \
                         {params.opts} \
-                    |    samtools view - -bS \
-                    | samtools sort - -T $sort_dir -o {output};
-                    samtools index {output};
+                    |    samtools view - -bS -@ {threads}\
+                    | samtools sort - -T $sort_dir -o {output} -@ {threads};
+                    samtools index {output} -@ {threads};
                     rm -rf $sort_dir;
         }} > {log} 2>&1
         """
