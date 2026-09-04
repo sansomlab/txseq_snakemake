@@ -11,7 +11,7 @@ This pipeline quantifies gene expression from FASTQ files using `Hisat2 <http://
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_hisat.yml` file.
+The pipeline requires a configured config_hisat.yml file.
 
 
 Inputs
@@ -19,10 +19,10 @@ Inputs
 
 The pipeline requires the following inputs
 
-#. samples.tsv: see :doc:`Configuration files<configuration>`
-#. libraries.tsv: see :doc: `Configuration files<configuration>`
-#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
-#. Hisat index: a hisat2 index built with :doc:`pipeline_hisat_index.py </pipelines/pipeline_hisat_index>`.
+#. samples.tsv: see configuration docs
+#. libraries.tsv: see configuration docs
+#. txseq annotations: the location where the ensembl.smk was run to prepare the annotatations.
+#. Hisat index: a hisat2 index built with hisat_index.smk.
 
 
 Requirements
