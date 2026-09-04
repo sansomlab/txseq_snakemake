@@ -11,15 +11,15 @@ This pipeline counts the number of reads mapped to transcript/gene models. It us
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_feature_counts.yml` file.
+The pipeline requires a configured config_feature_counts.yml file.
 
 Inputs
 ------
 
 The pipeline requires the following inputs
 
-#. samples.tsv: see :doc:`Configuration files<configuration>`
-#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+#. samples.tsv: see configuration docs
+#. txseq annotations: the location where the ensembl.smk was run to prepare the annotatations.
 #. bam files: the location of a folder containing the bam files named by "sample_id".
 
 
@@ -37,7 +37,7 @@ Output files
 The pipeline produces the following outputs:
 
 #. per-sample results: in the "feature.counts.dir" subdirectory
-#. An sqlite database: in a file named "csvdb" which contains the per-gene counts.
+#. A sqlite database: in a file named "csvdb" which contains the per-gene counts.
 
 
 Code
