@@ -11,7 +11,7 @@ This pipeline computes QC statistic from BAM files. It uses the `Picard toolkit 
 Configuration
 -------------
 
-The pipeline requires a configured :file:`config_bamqc.yml` file.
+The pipeline requires a configured `config_bamqc.yml` file.
 
 Inputs
 ------
@@ -20,7 +20,7 @@ The pipeline requires the following inputs
 
 #. samples.tsv: see :doc:`Configuration files<configuration>`
 #. bam files: the location of a folder containing the bam files named by "sample_id".
-#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
+#. txseq annotations: the location where the ensembl.smk pipeline was run to prepare the annotatations.
 
 
 Requirements
