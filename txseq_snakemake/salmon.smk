@@ -11,7 +11,7 @@ This pipeline quantifies gene expression from FASTQ files using `Salmon <https:/
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_salmon.yml` file.
+The pipeline requires a configured :file:`config_salmon.yml` file.
 
 
 Inputs
@@ -19,10 +19,10 @@ Inputs
 
 The pipeline requires the following inputs
 
-#. samples.tsv: see :doc:`Configuration files<configuration>`
-#. libraries.tsv: see :doc: `Configuration files<configuration>`
-#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
-#. Salmon index: the location of a salmon index built with :doc:`pipeline_salmon_index.py </pipelines/pipeline_salmon_index>`.
+#. samples.tsv: see documentation configuration page
+#. libraries.tsv: see see documentation configuration page
+#. txseq annotations: the location where the ensembl.smk pipeline was run to prepare the annotatations.
+#. Salmon index: the location of a salmon index built with salmon_index.smk.
 
 
 Requirements
@@ -37,8 +37,10 @@ Output files
 
 The pipeline produces the following outputs:
 
-#. per-sample salmon quantification results in the "salmon.dir" folder
-#. a csvdb sqlite database that contains tables of gene and transcript counts and TPMs
+#. per-sample salmon quantification results in the "salmon.dir" folder.
+#. a csvdb sqlite database that contains tables of gene and transcript counts and TPMs.
+#. a gene level summary in a genesummarizedexperiment in the "tximeta" folder. 
+#. information on the number of genes detected in each sample.
 
 .. note::
 
