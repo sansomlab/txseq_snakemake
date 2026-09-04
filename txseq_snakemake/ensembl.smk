@@ -14,14 +14,14 @@ It performs the following tasks:
 #. Makes a version of primary assembly FASTA file in which the Y chromosome PAR regions are hard masked.
 #. Makes a FASTA file containing the coding (cDNA) and non-coding (ncRNA) Ensembl transcripts from PRIMARY contigs that are not multi-placed transcript sequences.
 #. Makes a similarly filtered version of the Ensembl geneset GTF file.
-#. Makes a transcript -> gene map for use with sample
+#. Makes a transcript -> gene map
 #. Makes a transcript information table that contains information on transcript and gene names and biotypes.
 
 
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_ensembl.yml` file.
+The pipeline requires a configured :file:`config_ensembl.yml` file.
 
 Input files
 -----------
@@ -34,7 +34,7 @@ The pipeline requires the following inputs
 #. The Ensembl ncRNA FASTA sequences 
 #. PAR region definitions in BED format
 
-The location of these three files must be specified in the 'pipeline_ensembl.yml' file.
+The location of these three files must be specified in the 'config_ensembl.yml' file.
 
 Output files
 ------------
