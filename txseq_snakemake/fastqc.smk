@@ -17,7 +17,7 @@ The pipeline runs the `FASTQC quality control tool <https://www.bioinformatics.b
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_fastqc.yml` file.
+The pipeline requires a configured config_fastqc.yml.
 
 
 
@@ -26,8 +26,8 @@ Inputs
 
 The pipeline requires the following inputs
 
-#. samples.tsv: see :doc:`Configuration files<configuration>`
-#. libraries.tsv: see :doc: `Configuration files<configuration>`
+#. samples.tsv: see configuration docs
+#. libraries.tsv: see configuration docs
 #. Optional custom lists of adaptors and contaminants. 
 
 Requirements
