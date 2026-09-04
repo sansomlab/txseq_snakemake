@@ -7,13 +7,10 @@ Overview
 
 This pipeline makes a hisat2 HGFM index with transcripts.
 
-The pipeline is written using the `CGAT-core workflow management system <https://cgat-core.readthedocs.io/en/latest/>`_ .
-
-
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_hisat_index.yml` file.
+The pipeline requires a configured config_hisat_index.yml file.
 
 
 
@@ -25,7 +22,7 @@ For building the  index the pipeline requires:
 #. A gzip compressed FASTA file containing the genome primary assembly sequences.
 #. A gzip compressed GTF file containing the transcript information.
 
-The location of these files must be specified in the 'pipeline_index.yml' file.
+The location of these files must be specified in the 'config_hisat_index.yml' file.
 
 Requirements
 ------------
