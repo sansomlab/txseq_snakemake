@@ -3,11 +3,12 @@
 library(optparse)
 suppressPackageStartupMessages(library(tximeta))
 suppressPackageStartupMessages(library(tximport))
+library(jsonlite)
 
 ## deal with the options
 option_list <- list(
-    make_option(c("--indexdir"), default=NULL,
-                help="the path to the Salmon index directory"),
+    make_option(c("--index_name"), default=NULL,
+                help="unique_index_name"),
     make_option(c("--salmondir"), default=NULL,
                 help="the path to the per Salmon output folders"),
     make_option(c("--transcripts"), default=NULL,
@@ -36,13 +37,26 @@ print(opt)
 out_folder = dirname(opt$outfile)
 jsonFile_path = file.path(out_folder,"make.linked.Txome.json")
 
+message("making the coldata")
+coldata <- read.table(opt$samples, header=T, sep="\t")
+
+coldata$names <- coldata$sample_id
+coldata$files <- file.path(getwd(), opt$salmondir, coldata$name, "quant.sf")
+
+write.table(coldata,file.path(dirname(opt$outfile),"coldata.tsv"),
+            col.names=T, sep="\t", row.names=F, quote=F)
+
+json_meta<-file.path(getwd(), opt$salmondir, coldata$name[[1]],"aux_info/meta_info.json")
+mi <- fromJSON(json_meta)
+
 # set the tximeta cache location
 # - this is essential to ensure use of the corrected linked transcriptome
 #   (in testing, tximeta repeatedly tried to use incorrect cached files)
 setTximetaBFC(file.path(out_folder,"cache"), quiet = FALSE)
 
 message("making Linked Transcriptome")
-makeLinkedTxome(indexDir=opt$indexdir,
+makeLinkedTxome(digest = mi$index_seq_hash,
+                indexName = opt$index_name,
                 source="LocalEnsembl",
                 organism=opt$organism,
                 release=opt$release,
@@ -53,15 +67,6 @@ makeLinkedTxome(indexDir=opt$indexdir,
 		jsonFile=jsonFile_path)
 
 # construct the coldata
-
-message("making the coldata")
-coldata <- read.table(opt$samples, header=T, sep="\t")
-
-coldata$names <- coldata$sample_id
-coldata$files <- file.path(getwd(), opt$salmondir, coldata$name, "quant.sf")
-
-write.table(coldata,file.path(dirname(opt$outfile),"coldata.tsv"),
-            col.names=T, sep="\t", row.names=F, quote=F)
 
 message("making the se object")
 se <- tximeta(coldata)
