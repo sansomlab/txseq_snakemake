@@ -26,7 +26,7 @@ parser.add_argument("--database", default="csvdb", type=str,
                     help=("The path to the sqlite database"))
 parser.add_argument("--table", default=None, type=str,
                     help=("The table name"))
-parser.add_argument("--idname", default="gene_id", type=str,
+parser.add_argument("--idname", default="Name", type=str,
                     help='the name of the column containing the gene '
                          'or transcript identifiers')
 parser.add_argument("--outfile", default=None, type=str,
