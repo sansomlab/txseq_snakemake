@@ -199,7 +199,7 @@ rule loadSalmonGeneQuant:
                 )
 
             print("Running statement:\n", statement, flush=True)
-            shell(f"{statement} > {log} 2>&1")
+            shell(f"{statement} 2> {log}")
 
 # --------------------- Get TPMs --------------------------- #
 rule salmon_genes_tpms:
@@ -234,7 +234,8 @@ rule salmon_genes_tpms:
 
 rule salmon_transcripts_tpms:
     input:
-       os.path.join("salmon.dir", "salmon.transcripts.load")
+       trans=os.path.join("salmon.dir", "salmon.transcripts.load"),
+       preload1=os.path.join("salmon.dir", "salmon.genes.tpms.txt.gz")
     output:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
     params:
@@ -249,7 +250,7 @@ rule salmon_transcripts_tpms:
     log:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.load.log")
     run:
-            table = to_table(input[0])
+            table = to_table(input.trans)
             outfile=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
 
             statement = f"""
@@ -267,7 +268,8 @@ rule salmon_transcripts_tpms:
 rule loadSalmonTranscriptTPMs:
     input:
        tpms=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz"),
-       preload1=os.path.join("salmon.dir", "salmon.genes.load")
+       preload1=os.path.join("salmon.dir", "salmon.genes.load"),
+       prelaod2=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
     output:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.load")
     params:
@@ -359,7 +361,8 @@ rule transcript_info:
     input:
         ti=os.path.join(config["txseq"].get("annotations"),
                           "api.dir/txseq.transcript.info.tsv.gz"),
-        preload4=os.path.join("salmon.dir", "salmon.genes.tpms.load")
+        preload4=os.path.join("salmon.dir", "salmon.genes.tpms.load"),
+        preload_again=os.path.join("salmon.dir", "salmon.genes.tpms.load")
     output:
         os.path.join("transcript.info.load")
     params:
