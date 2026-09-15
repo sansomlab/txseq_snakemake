@@ -334,7 +334,7 @@ rule tximeta:
         tximeta_release=config["tximeta"].get("release"),
         tximeta_genome=config["tximeta"].get("genome"),
         tximeta_organism=config["tximeta"].get("organism"),
-        txseq_salmon_index_name=config["txseq"].get("index_name")
+        txseq_salmon_index_name=config["txseq"].get("salmon_index_name")
 
     threads: 1
     resources:

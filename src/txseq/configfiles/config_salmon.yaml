@@ -36,7 +36,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/salmon.index.dir/salmon_index
   #
-  salmon_index: 
+  salmon_index_name: 
 
 salmon:
   # options that will be passed to the salmon quant read-aligment call
