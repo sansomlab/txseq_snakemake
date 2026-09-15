@@ -11,7 +11,7 @@ This pipeline quantifies gene expression from FASTQ files using `Salmon <https:/
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_salmon.yml` file.
+The pipeline requires a configured :file:`config_salmon.yml` file.
 
 
 Inputs
@@ -19,10 +19,10 @@ Inputs
 
 The pipeline requires the following inputs
 
-#. samples.tsv: see :doc:`Configuration files<configuration>`
-#. libraries.tsv: see :doc: `Configuration files<configuration>`
-#. txseq annotations: the location where the :doc:`pipeline_ensembl.py </pipelines/pipeline_ensembl>` was run to prepare the annotatations.
-#. Salmon index: the location of a salmon index built with :doc:`pipeline_salmon_index.py </pipelines/pipeline_salmon_index>`.
+#. samples.tsv: see documentation configuration page
+#. libraries.tsv: see see documentation configuration page
+#. txseq annotations: the location where the ensembl.smk pipeline was run to prepare the annotatations.
+#. Salmon index: the location of a salmon index built with salmon_index.smk.
 
 
 Requirements
@@ -37,8 +37,10 @@ Output files
 
 The pipeline produces the following outputs:
 
-#. per-sample salmon quantification results in the "salmon.dir" folder
-#. a csvdb sqlite database that contains tables of gene and transcript counts and TPMs
+#. per-sample salmon quantification results in the "salmon.dir" folder.
+#. a csvdb sqlite database that contains tables of gene and transcript counts and TPMs.
+#. a gene level summary in a genesummarizedexperiment in the "tximeta" folder. 
+#. information on the number of genes detected in each sample.
 
 .. note::
 
@@ -176,6 +178,7 @@ rule loadSalmonTranscriptQuant:
 rule loadSalmonGeneQuant:
     input:
        quant=expand(os.path.join("salmon.dir","{samp}","quant.genes.sf"), samp=S.samples.keys()),
+       preload1=os.path.join("salmon.dir", "salmon.transcripts.load")
     output:
         os.path.join("salmon.dir", "salmon.genes.load")
     params:
@@ -187,7 +190,7 @@ rule loadSalmonGeneQuant:
         os.path.join("salmon.dir", "salmon.genes.load.log")
     run:
             statement = concatenate_and_load(
-                    infiles=list(input),
+                    infiles=list(input.quant),
                     outfile=str(output[0]),
                     regex_filename=".*/(.*)/quant.genes.sf",
                     cat="sample_id",
@@ -196,7 +199,7 @@ rule loadSalmonGeneQuant:
                 )
 
             print("Running statement:\n", statement, flush=True)
-            shell(f"{statement} > {log} 2>&1")
+            shell(f"{statement} 2> {log}")
 
 # --------------------- Get TPMs --------------------------- #
 rule salmon_genes_tpms:
@@ -232,7 +235,8 @@ rule salmon_genes_tpms:
 
 rule salmon_transcripts_tpms:
     input:
-       os.path.join("salmon.dir", "salmon.transcripts.load")
+       trans=os.path.join("salmon.dir", "salmon.transcripts.load"),
+       preload1=os.path.join("salmon.dir", "salmon.genes.tpms.txt.gz")
     output:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
     params:
@@ -243,11 +247,12 @@ rule salmon_transcripts_tpms:
                 "salmon_fetch_tpms.py"),
     threads: 1
     resources:
-        **RESOURCES,
+        mem_mb=config["salmon"].get("memory"),
+        runtime=config["salmon"].get("runtime"),
     log:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.load.log")
     run:
-            table = to_table(input[0])
+            table = to_table(input.trans)
             outfile=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
 
             statement = f"""
@@ -264,7 +269,9 @@ rule salmon_transcripts_tpms:
 # --------------------- Load TPMs into SQL --------------------------- #
 rule loadSalmonTranscriptTPMs:
     input:
-       os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
+       tpms=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz"),
+       preload1=os.path.join("salmon.dir", "salmon.genes.load"),
+       prelaod2=os.path.join("salmon.dir", "salmon.transcripts.tpms.txt.gz")
     output:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.load")
     params:
@@ -276,7 +283,7 @@ rule loadSalmonTranscriptTPMs:
         os.path.join("salmon.dir", "salmon.transcripts.tpms.load.log")
     run:
             statement = load(
-                    infile=input[0],
+                    infile=input.tpms,
                     outfile=str(output[0]),
                     job_memory={params.job_mem},
                     options="-i transcript_id"
@@ -287,7 +294,8 @@ rule loadSalmonTranscriptTPMs:
 
 rule loadSalmonGeneTPMs:
     input:
-       os.path.join("salmon.dir", "salmon.genes.tpms.txt.gz")
+       tpms=os.path.join("salmon.dir", "salmon.genes.tpms.txt.gz"),
+       preload3=os.path.join("salmon.dir", "salmon.transcripts.tpms.load")
     output:
         os.path.join("salmon.dir", "salmon.genes.tpms.load")
     params:
@@ -299,7 +307,7 @@ rule loadSalmonGeneTPMs:
         os.path.join("salmon.dir", "salmon.genes.tpms.load.log")
     run:
             statement = load(
-                    infile=input[0],
+                    infile=input.tpms,
                     outfile=str(output[0]),
                     job_memory={params.job_mem},
                     options="-i gene_id"
@@ -326,7 +334,7 @@ rule tximeta:
         tximeta_release=config["tximeta"].get("release"),
         tximeta_genome=config["tximeta"].get("genome"),
         tximeta_organism=config["tximeta"].get("organism"),
-        txseq_salmon_index=config["txseq"].get("salmon_index")
+        txseq_salmon_index_name=config["txseq"].get("index_name")
 
     threads: 1
     resources:
@@ -338,7 +346,7 @@ rule tximeta:
         """
         {{
             Rscript {params.script} \
-                   --indexdir={params.txseq_salmon_index} \
+                   --index_name={params.txseq_salmon_index_name} \
                    --salmondir=salmon.dir \
                    --transcripts={params.transcript_path} \
                    --geneset={params.geneset_path} \
@@ -353,8 +361,10 @@ rule tximeta:
 # --------------------- Get transcript info --------------------------- #
 rule transcript_info:
     input:
-       os.path.join(config["txseq"].get("annotations"),
-                          "api.dir/txseq.transcript.info.tsv.gz")
+        ti=os.path.join(config["txseq"].get("annotations"),
+                          "api.dir/txseq.transcript.info.tsv.gz"),
+        preload4=os.path.join("salmon.dir", "salmon.genes.tpms.load"),
+        preload_again=os.path.join("salmon.dir", "salmon.genes.tpms.load")
     output:
         os.path.join("transcript.info.load")
     params:
@@ -365,7 +375,7 @@ rule transcript_info:
         "transcript.info.load.log"
     run:
             statement = load(
-                    infile=input[0],
+                    infile=input.ti,
                     outfile=str(output[0]),
                     options='-i "gene_id" -i "transcript_id"'
                 )
@@ -376,7 +386,8 @@ rule transcript_info:
 # --------------------- PGet n genes detected --------------------------- #
 rule num_genes_detected:
     input:
-       os.path.join("salmon.dir", "salmon.genes.tpms.load")
+       ti=os.path.join("transcript.info.load"),
+       tpm=os.path.join("salmon.dir", "salmon.genes.tpms.load")
     output:
         os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
     params:
@@ -391,7 +402,7 @@ rule num_genes_detected:
     log:
         os.path.join("qc.dir", "number.genes.detected.salmon.log")
     run:
-            table = to_table(input[0])
+            table = to_table(input.tpm)
             outfile=os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
 
             statement = f"""
@@ -407,7 +418,9 @@ rule num_genes_detected:
 ## --------------------- Pload n genes into SQL --------------------------- #
 rule load_n_genes_detected:
     input:
-        os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz")
+        ngd=os.path.join("qc.dir", "number.genes.detected.salmon.tsv.gz"),
+        preload1=os.path.join("salmon.dir", "salmon.genes.load"),
+        preload5=os.path.join("transcript.info.load")
     output:
         os.path.join("qc.dir","qc_no_genes_salmon.load")
     params:
@@ -418,7 +431,7 @@ rule load_n_genes_detected:
         os.path.join("qc.dir","qc_no_genes_salmon.load.log")
     run:
             statement = load(
-                    infile=input[0],
+                    infile=input.ngd,
                     outfile=str(output[0]),
                     options='-i "sample_id"'
                 )
