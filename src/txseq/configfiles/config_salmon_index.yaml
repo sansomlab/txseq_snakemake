@@ -60,3 +60,4 @@ resources:
   mem_mb: 30000
   threads: 12
   runtime: 300
+  account: kir.prj

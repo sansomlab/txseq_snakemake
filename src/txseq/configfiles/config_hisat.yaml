@@ -45,5 +45,6 @@ resources:
     mem_mb: 1000
     runtime: 60
     partition: short
+    account: kir.prj
 
 

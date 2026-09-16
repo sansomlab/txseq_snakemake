@@ -53,6 +53,7 @@ resources:
     mem_mb: 12000
     runtime: 120
     partition: short
+    account: kir.prj
 
 database:
   url: sqlite:///csvdb
