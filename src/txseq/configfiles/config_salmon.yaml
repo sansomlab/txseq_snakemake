@@ -1,17 +1,20 @@
-# Pipeline pipeline_salmon.py configuration file
+# Pipeline salmon.smk configuration file
 # =============================================
 #
 
-# location of the local sqlite3 database
+# memory for sqlite database loading
 sqlite:
   himem: 10000M
+#database info
+database:
+  url: sqlite:///csvdb
+  db: csvdb
 
 # path to the sample table
-samples: ../samples.tsv
+samples: ./path/to/samples.tsv
 
-# Path to the table of sequencing libraries (required when starting from FASTQ files)
-# Either a path to a tsv file or "None"
-libraries: ../libraries.tsv
+# Path to the table of sequencing libraries 
+libraries: ./path/to/libraries.tsv
 
 txseq:
   # Path to the location where the "txseq ensembl" pipeline was run
@@ -37,6 +40,7 @@ txseq:
   #       /my/path/to/GRCm39.110.dir/salmon.index.dir/salmon_index
   #
   salmon_index:
+  #unique name for index
   salmon_index_name: 
 
 salmon:
@@ -64,6 +68,4 @@ resources:
     partition: short
     account: kir.prj
 
-database:
-  url: sqlite:///csvdb
-  db: csvdb
+
