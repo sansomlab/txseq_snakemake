@@ -11,7 +11,7 @@ This pipeline quantifies gene expression from FASTQ files using `Salmon <https:/
 Configuration
 -------------
 
-The pipeline requires a configured :file:`config_salmon.yml` file.
+The pipeline requires a configured :file:`salmon.yaml` file.
 
 
 Inputs
@@ -31,6 +31,7 @@ Requirements
 The following software is required:
 
 #. Salmon
+#. R
 
 Output files
 ------------
