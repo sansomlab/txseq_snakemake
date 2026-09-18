@@ -11,7 +11,7 @@ This pipeline quantifies gene expression from FASTQ files using `Hisat2 <http://
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_hisat.yml` file.
+The pipeline requires a configured :file:`hisat.yaml` file.
 
 
 Inputs
@@ -103,12 +103,21 @@ print("ss file is "+ss_file)
 RESOURCES = config.get("resources", {})
 
 
+#do we run a second pass?
+second_pass=config.get("second_pass")
+if second_pass:
+    second_pass_run=expand(os.path.join(config["rundir"],"hisat.dir", "{samp}.bam"), samp=S.samples.keys())
+else:
+    second_pass_run=[]
+
+
 # --------------------- Pipeline --------------------------- #
 localrules: full
 #rule all
 rule full:
     input:
-        expand(os.path.join(config["rundir"],"hisat.dir", "{samp}.bam"), samp=S.samples.keys())
+        sec_pass_run=second_pass_run,
+        first_pass=os.path.join(config["rundir"],"hisat.dir", "annotations","novel.splice.sites.txt")
 
 # --------------------- First pass --------------------------- #
 ## first pass of hisat. 

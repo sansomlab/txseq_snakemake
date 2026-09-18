@@ -1,12 +1,18 @@
 
 rundir: 
 
-samples: 
-libraries:
+# path to the sample table
+samples: ./path/to/samples.tsv
+
+# Path to the table of sequencing libraries 
+libraries: ./path/to/libraries.tsv
+#path to fq files
 fq_dir:
 
 paired: #True or false
 strand: 
+#Do we want to run a second pass? NOTE: This is in testing and immensely resource intensive- only do it if you need to specifically look at splicing. 
+second_pass: FALSE
 
 hisat_thread: 8
 hisat_runtime: 60
@@ -22,7 +28,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir
   #
-   annotations: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir
+   annotations:
   
   # Path to the location where the "txseq hisat_index" pipeline was run
   # to generate the hisat index
@@ -34,7 +40,7 @@ txseq:
    # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/hisat.index.dir/genome_tran
   #
-   hisat_index: /well/kir/mirror/txseq/GRCh38.110.dir/hisat.index.dir/genome_tran
+   hisat_index:
 
 hisat:  
   # hisat2 options
