@@ -1,4 +1,4 @@
-# pipeline_salmon_index.py configuration file
+# pipeline salmon_index.smk configuration file
 # ===========================================
 #
 rundir:

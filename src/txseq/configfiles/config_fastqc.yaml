@@ -1,18 +1,17 @@
-# Pipeline pipeline_fastqc.py configuration file
+# Pipeline fastqc.smk configuration file
 # ==============================================
 #
 
 # location of the local sqlite3 database
-sqlite:
-  file: csvdb
-  himem: 10000M
+database:
+  url: sqlite:///csvdb
+  db: csvdb
 
 # path to the sample table
-samples: ../samples.tsv
+samples: ~/path/to/samples.tsv
 
-# Path to the table of sequencing libraries (required when starting from FASTQ files)
-# Either a path to a tsv file or "None"
-libraries: ../libraries.tsv
+# Path to the table of sequencing libraries 
+libraries: ~/path/to/libraries.tsv
 
 fastqc:
   # Path to file with contaminants or "default"
@@ -34,6 +33,3 @@ resources:
     partition: short
     account: kir.prj
 
-database:
-  url: sqlite:///csvdb
-  db: csvdb

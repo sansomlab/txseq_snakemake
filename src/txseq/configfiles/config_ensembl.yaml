@@ -1,4 +1,4 @@
-# pipeline_ensembl.py configuration file
+# ensembl.smk configuration file
 # =======================================
 #
 
@@ -15,7 +15,7 @@ rundir:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
 #
-primary_assembly: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+primary_assembly: 
 
 # A local path to the Ensembl geneset in gzipped GTF format
 #
@@ -27,7 +27,7 @@ primary_assembly: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.dn
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.110.gtf.gz
 #
-geneset: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.110.gtf.gz
+geneset: 
 
 # A local path to the Ensembl cDNA FASTA sequences in gzipped FASTA format
 #
@@ -39,7 +39,7 @@ geneset: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.110.gtf.gz
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.cdna.all.fa.gz
 #
-cdna: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.cdna.all.fa.gz
+cdna: 
 
 # A local path to the Ensembl ncRNA FASTA sequences in gzipped FASTA format
 #
@@ -51,7 +51,7 @@ cdna: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.cdna.all.fa.gz
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.ncrna.fa.gz
 #
-ncrna: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.ncrna.fa.gz
+ncrna: 
 
 # A local path to PAR region definitions in BED format
 #
@@ -64,7 +64,7 @@ ncrna: /well/kir/mirror/ensembl/GRCh38.110.dir/Homo_sapiens.GRCh38.ncrna.fa.gz
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/GRCm39.PAR.bed
 #
-par: /well/kir/mirror/ensembl/GRCh38.110.dir/GRCh38.p14.PAR.bed 
+par: 
 
 resources:
     threads: 1

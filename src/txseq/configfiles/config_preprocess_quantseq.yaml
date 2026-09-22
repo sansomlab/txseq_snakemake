@@ -2,9 +2,8 @@
 # =======================================
 #
 
-# The location of a text file containing a list of the paths to FASTQ files to be processed.
-# The file should have one path per line with no header.
-libraries: fastqs.tsv
+# The libraries.tsv file- see config docs
+libraries: ~/path/to/libraries.tsv
 
 # Trim reads?
 # Either "False"

@@ -1,7 +1,7 @@
-# Pipeline pipeline_bam_qc.py configuration file
+# Pipeline bamqc.smk configuration file
 # =============================================
 #
-rundir: ~/devel/testing_txseq_snakemake/full_fqs/bamqc/
+rundir: 
 # select tasks to run
 run:
 
@@ -10,17 +10,15 @@ run:
 # location of the local sqlite3 database
 sqlite:
   file: csvdb
-  himem: 10000M
 
-
-strand: None
-paired: True
+strand: 
+paired: 
  
 # path to the sample table
-samples: /users/sansom/wrf380/devel/testing_txseq_snakemake/full_fqs/samples.tsv
+samples: ~/path/to/samples.tsv
 
 # path to the folder containing the bam files
-bam_path:  /users/sansom/wrf380/devel/testing_txseq_snakemake/full_fqs/hisat/hisat.dir/
+bam_path:  ~/path/to/hisat/hisat.dir/
 
 txseq:
   # Path to the location where the "txseq ensembl" pipeline was run
@@ -33,7 +31,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir
   #
-  annotations:  /users/sansom/wrf380/devel/testing_txseq_snakemake/ensembl_pipeline/ensembl.dir
+  annotations:  
   
 picard:
 
@@ -55,5 +53,3 @@ resources:
     partition: short
     account: kir.prj
 
-database:
-  url: sqlite:///csvdb

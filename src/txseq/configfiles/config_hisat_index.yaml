@@ -1,4 +1,4 @@
-# pipeline_hisat_index.py configuration file
+# hisat_index.smk configuration file
 # ==========================================
 #
 rundir:
