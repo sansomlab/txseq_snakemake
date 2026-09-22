@@ -31,6 +31,7 @@ Requirements
 The following software is required:
 
 #. Hisat2
+#. Samtools
 
 
 Output files
@@ -103,21 +104,12 @@ print("ss file is "+ss_file)
 RESOURCES = config.get("resources", {})
 
 
-#do we run a second pass?
-second_pass=config.get("second_pass")
-if second_pass:
-    second_pass_run=expand(os.path.join(config["rundir"],"hisat.dir", "{samp}.bam"), samp=S.samples.keys())
-else:
-    second_pass_run=[]
-
-
 # --------------------- Pipeline --------------------------- #
 localrules: full
 #rule all
 rule full:
     input:
-        sec_pass_run=second_pass_run,
-        first_pass=os.path.join(config["rundir"],"hisat.dir", "annotations","novel.splice.sites.txt")
+        first_pass=expand(os.path.join(config["rundir"],"hisat.dir", "{samp}.bam"), samp=S.samples.keys())
 
 # --------------------- First pass --------------------------- #
 ## first pass of hisat. 
@@ -125,97 +117,56 @@ rule first_pass:
     input:
         os.path.join(config["fq_dir"],"{samp}_1.fq.gz")
     output:
-        os.path.join(config["rundir"],"hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz")
-    params:
-        index=config["txseq"].get("hisat_index"),
-        opts=config["hisat"].get("options"),
-        strand_param=strand_param,
-        fastq_input=lambda wildcards: fastq_input(wildcards.samp),
-        known_ss=ss_file,
-        novel_ss_outfile=os.path.join(config["rundir"],"hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt"),
-    threads:
-        config["hisat_thread"],
-    resources:
-        mem_mb=config["hisat_memory"],
-        runtime=config["hisat_runtime"]
-    log:
-        os.path.join(config["rundir"],"hisat.dir","first.pass.dir", "{samp}.log")
-    shell:
-        """
-        {{
-        hisat2 \
-                    -x {params.index} \
-                    {params.fastq_input} \
-                    --threads {threads} \
-                    --known-splicesite-infile={params.known_ss} \
-                    --novel-splicesite-outfile {params.novel_ss_outfile} \
-                    {params.strand_param} \
-                    {params.opts} \
-                    -S /dev/null; 
-                gzip {params.novel_ss_outfile} 
-        }} > {log} 2>&1
-        """
-
-# --------------------- Collect splice sites --------------------------- #
-## collect all novel splice sites files into one
-rule collect_sites:
-    input:
-        expand(os.path.join(config["rundir"],"hisat.dir","first.pass.dir", "{samp}.novel.splice.sites.txt.gz"), samp=S.samples.keys()),
-    output:
-        os.path.join(config["rundir"],"hisat.dir", "annotations","novel.splice.sites.txt")
-    threads: 1
-    resources:
-        **RESOURCES,
-    log:
-        os.path.join(config["rundir"],"hisat.dir", "annotations","novel.splice.sites.log")
-    shell:
-        """
-        {{
-        mkdir -p tmp.dir;
-        sort_dir=`mktemp -d -p tmp.dir`;
-        zcat {input} \
-        | sort -k1,1 -T $sort_dir \
-        | uniq \
-        > {output};
-        rm -rf $sort_dir
-        }} > {log} 2>&1
-        """
-
-# --------------------- Second pass --------------------------- #
-## second pass of hisat. 
-rule second_pass:
-    input:
-        sample_int=os.path.join(config["fq_dir"],"{samp}_1.fq.gz"),
-        splice_file=os.path.join(config["rundir"],"hisat.dir", "annotations","novel.splice.sites.txt")
-    output:
         os.path.join(config["rundir"],"hisat.dir", "{samp}.bam")
     params:
         index=config["txseq"].get("hisat_index"),
         opts=config["hisat"].get("options"),
         strand_param=strand_param,
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
+        known_ss=ss_file,
     threads:
         config["hisat_thread"],
     resources:
         mem_mb=config["hisat_memory"],
         runtime=config["hisat_runtime"]
     log:
-        os.path.join("hisat.dir", "{samp}.log")
+        os.path.join(config["rundir"],"hisat.dir", "{samp}.log")
     shell:
         """
         {{
         mkdir -p tmp.dir;
             sort_dir=`mktemp -d -p tmp.dir`;
                 hisat2 \
-                        -x {params.index} \
-                        {params.fastq_input} \
-                        --threads {threads} \
-                        --novel-splicesite-infile {input.splice_file} \
-                        {params.strand_param} \
-                        {params.opts} \
-                    |    samtools view - -bS \
-                    | samtools sort - -T $sort_dir -o {output};
-                    samtools index {output};
-                    rm -rf $sort_dir;
+                            -x {params.index} \
+                            {params.fastq_input} \
+                            --threads {threads} \
+                            --known-splicesite-infile={params.known_ss} \
+                            {params.strand_param} \
+                            {params.opts} \
+                        | samtools view - -bS \
+                        | samtools sort - -T $sort_dir -o {output};
+                        samtools index {output};
+                        rm -rf $sort_dir;
         }} > {log} 2>&1
         """
+
+
+    
+   # shell:
+   #     """
+   #     {{
+   #     mkdir -p tmp.dir;
+   #         sort_dir=`mktemp -d -p tmp.dir`;
+   #             hisat2 \
+   #                     -x {params.index} \
+   #                     {params.fastq_input} \
+   #                     --threads {threads} \
+   #                     --novel-splicesite-infile {input.splice_file} \
+   #                     {params.strand_param} \
+   #¢                     {params.opts} \
+   #                 |    samtools view - -bS \
+   #                 | samtools sort - -T $sort_dir -o {output};
+   #                 samtools index {output};
+   #                 rm -rf $sort_dir;
+   #     }} > {log} 2>&1
+   #     """
