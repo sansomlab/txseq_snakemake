@@ -11,3 +11,4 @@ mkdocs-glightbox
 mkdocs-material-extensions
 mkdocs-awesome-pages-plugin
 mkdocs-rss-plugin
+mkdocs-table-reader-plugin

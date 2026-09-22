@@ -7,6 +7,14 @@ site_url: ""
 repo_name:  sansomlab/txseq_snakemake 
 repo_url: https://github.com/sansomlab/txseq_snakemake
 
+nav:
+  - Workflow overview: index.md
+  - Installation: Installation.md
+  - Genomes and Annotations: genomesAndAnnotations.md
+  - Building transcriptome indexes: buildingTranscriptomeIndexes.md
+  - Configuration files: configuration.md
+  - Mouse HSCs example: mouse_hscs_example.md
+
 theme:
   name: material
   logo: images/KIR_Research_Computing_Hub_layered_logo_favicon.svg

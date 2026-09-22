@@ -45,20 +45,24 @@ The example requires Salmon and Hisat2 indexes. To build these, follow the [Buil
 First we run the [FastQC tool](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) using the fastqc.smk pipeline. Get a copy of the configuration file and edit appropriately to ensure that the correct "libraries.tsv" and "samples.tsv" files paths are set.
 
 ```text
+  module purge
+  unset PYTHONPATH
+  source ./txseq_smk_venv/bin/activate
+  module load FastQC/0.12.1-Java-11
   cd ~/work/txseq_hscs_example
   mkdir fastqc
   cd fastqc
   txseq fastqc config # get a copy of the default configuration file
-  emacs pipeline_fastqc.yml # edit the configuration file as appropriate
+  emacs fastqc.yaml # edit the configuration file as appropriate
 ```
 
 The pipeline can then be run as follows:
 
 ```text
-  txseq fastqc make full -v5 -p20
+  txseq fastqc full --jobs 20 
 ```
 
-The pipeline parses and store the FastQC output into sqlite database in a file called "csvdb". To visualise the results, open the associated R Markdown Report ("reports/fastqc.Rmd") in Rstudio, assign the location of the database to the "fastqc_sqlite_database" variable and knit the report.
+The pipeline parses and store the FastQC output into sqlite database in a file called "csvdb". To visualise the results you can use the associated R Markdown Report ("reports/fastqc.Rmd") in Rstudio.
 
 
 ## 5. Mapping with Hisat2
@@ -66,6 +70,11 @@ The pipeline parses and store the FastQC output into sqlite database in a file c
 Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and hisat index:
 
 ```text
+  module purge
+  unset PYTHONPATH
+  source ./txseq_smk_venv/bin/activate
+  module load HISAT2/2.2.1-gompi-2023a
+  module load SAMtools/1.18-GCC-12.3.0
   cd ~/work/txseq_hscs_example
   mkdir hisat
   cd hisat
@@ -75,7 +84,7 @@ Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the 
   
 The pipeline can then be run as follows:
 ```text
-  txseq hisat make full -v5 -p20
+  txseq hisat full --jobs 20
 ```
 The output BAM files are located in the "hisat.dir" sub-directory.
 
@@ -84,15 +93,25 @@ The output BAM files are located in the "hisat.dir" sub-directory.
 After mapping with Hisat2, post-mapping QC statistics are computed using the bamqc.smk pipeline. This pipeline runs several [Picard](https://broadinstitute.github.io/picard/) tools including *CollectRnaSeqMetrics*, *EstimateLibraryComplexity*, *AlignmentSummaryMetrics* and *CollectInsertSizeMetrics* as well as some custom scripts. 
 
 ```text
+  module purge
+  module load R/4.5.1-gfbf-2023a-bare-noSciPy 
+  unset PYTHONPATH
+  source ./txseq_smk_venv/bin/activate
+  module load picard/2.25.1-Java-11
+  module load SAMtools/1.18-GCC-12.3.0
+  module load Kent_tools/468-GCC-12.3.0
   cd ~/work/txseq_hscs_example
   mkdir bamqc
   cd bamqc
   txseq bamqc config # get a copy of the default configuration file
   emacs pipeline_bamqc.yml # edit the configuration file as appropriate
 ```
+
+**IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
+
 The pipeline can then be run as follows:
 ```text
-  txseq bamqc make full -v5 -p20
+  txseq bamqc full --jobs 50
 ```
 The results are saved in an sqlite database in the "csvdb" file. 
 
@@ -101,6 +120,10 @@ The results are saved in an sqlite database in the "csvdb" file.
 Count tables can be extracted from the BAM file using the feature_counts.smk pipeline. 
 
 ```text
+  module purge
+  unset PYTHONPATH
+  source ./txseq_smk_venv/bin/activate
+  module load Subread/2.0.6-GCC-12.3.0
   cd ~/work/txseq_hscs_example
   mkdir feature_counts
   cd feature_counts
@@ -109,7 +132,7 @@ Count tables can be extracted from the BAM file using the feature_counts.smk pip
 ```
 The pipeline can then be run as follows:
 ```text
-  txseq feature_counts make full -v5 -p20
+  txseq feature_counts full --jobs 20
 ```
 The results are saved in an sqlite database in the "csvdb" file. 
 
@@ -117,13 +140,19 @@ The results are saved in an sqlite database in the "csvdb" file.
 
 To quantitate the data using the salmon.smk pipeline, we begin by fetching and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and salmon index:
 ```text
+  module purge
+  module load R/4.5.1-gfbf-2023a-bare-noSciPy
+  unset PYTHONPATH
+  module load Salmon/1.11.4-GCC-12.3.0
+  source ./txseq_smk_venv/bin/activate
   cd ~/work/txseq_hscs_example
   mkdir salmon
   cd salmon
   txseq salmon config # get a copy of the default configuration file
   emacs pipeline_salmon.yml # edit the configuration file as appropriate
 ```
-The pipeline can then be run as follows ::
+**IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
+The pipeline can then be run as follows :
 ```text
   txseq salmon make full -v5 -p20
 ```

@@ -14,30 +14,38 @@ Txseq has dedicated pipelines for building Salmon and Hisat2 indexes which can b
 
 ## Building a Salmon Index
 
-In a suitably named directory, obtain the salmon_index configuration file with the following command:
+In a suitably named directory, load the required modules and obtain the salmon_index configuration file with the following commands:
 
 ```text
-    mkdir salmon.index.dir
-    cd salmon.index.dir
-    txseq salmon_index config
-    emacs pipeline_salmon_index.yml
+    module purge
+	unset PYTHONPATH
+	source ./txseq_smk_venv/bin/activate
+	module load Salmon/1.11.4-GCC-12.3.0
+	mkdir salmon_index
+	cd salmon_index
+	txseq salmon_index config
+	emacs salmon_index.yaml 
 ```
-After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.transcript.fa.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command::
+After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.transcript.fa.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
 ```text
-    txseq salmon_index make full -v5 -p20
+    txseq salmon_index full 
 ```
 
 ## Building a Hisat2 Index
 
 
-In a suitably named directory, obtain the hisat_index configuration file with the following command:
+In a suitably named directory, loads the required modules obtain the hisat_index configuration file with the following commands:
 ```text
-    mkdir hisat.index.dir
-    cd hisat.index.dir
+    module purge
+    unset PYTHONPATH
+    source ./txseq_smk_venv/bin/activate
+    module load HISAT2/2.2.1-gompi-2023a
+    mkdir hisat_index
+    cd hisat_index
     txseq hisat_index config
-    emacs pipeline_hisat_index.yml
+    emacs hisat_index.yaml
 ```
 After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.geneset.gtf.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
 ```text
-    txseq hisat_index make full -v5 -p20
+    txseq hisat_index full --jobs 2
 ```

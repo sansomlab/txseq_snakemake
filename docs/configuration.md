@@ -87,17 +87,17 @@ Following installation, to find the available pipelines run:
 ```
 Next generate a configuration yml file:
 ```text
-  txseq salmon config -v5
+  txseq salmon config 
 ```
 To fully run e.g. the txseq salmon pipeline the following command is used:
 ```text
-  txseq salmon make full -v5 -p20
+  txseq salmon full --jobs 20
 ``` 
-The "-v5" flag sets the verbosity level to the maximum level and the "-p20" flag tells the pipeline to launch upto 20 jobs in parallel: this number should be set according to the sample number and availability of compute resources.
+The "--jobs 20" flag tells the pipeline to launch upto 20 jobs in parallel: this number should be set according to the sample number and availability of compute resources.
 
 It is also possible to run individual pipeline tasks to get a feel of what each one is doing. Individual tasks can then be executed by name, e.g.
 ```text
-  txseq salmon make quant -v5 -p20
+  txseq salmon quant --jobs 20
 ```
 !!! Note
     If any upstream tasks are out of date they will automatically be run before the named task is executed.
