@@ -1,5 +1,5 @@
 """================================
-Pipeline preprocess_quantseq_fed
+preprocess_quantseq.smk
 ================================
 
 Overview
@@ -19,7 +19,7 @@ This pipieline cuts adaptors from quantseq data according to the `Lexogen FAQ<ht
 Configuration
 -------------
 
-The pipeline requires a configured :file:`preprocess_quantseq_fwd.yml` file.
+The pipeline requires a configured :file:`preprocess_quantseq.yaml` file.
 
 Inputs
 ------

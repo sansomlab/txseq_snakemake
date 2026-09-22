@@ -17,7 +17,7 @@ The pipeline runs the `FASTQC quality control tool <https://www.bioinformatics.b
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_fastqc.yml` file.
+The pipeline requires a configured :file:`fastqc.yaml` file.
 
 
 

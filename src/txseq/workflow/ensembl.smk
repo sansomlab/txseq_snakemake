@@ -1,5 +1,5 @@
 """===================
-pipeline_ensembl.py
+ensembl.smk
 ===================
 
 Overview
@@ -21,7 +21,7 @@ It performs the following tasks:
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_ensembl.yml` file.
+The pipeline requires a configured :file:`ensembl.yaml` file.
 
 Input files
 -----------
@@ -34,7 +34,7 @@ The pipeline requires the following inputs
 #. The Ensembl ncRNA FASTA sequences 
 #. PAR region definitions in BED format
 
-The location of these three files must be specified in the 'pipeline_ensembl.yml' file.
+The location of these three files must be specified in the 'ensembl.yaml' file.
 
 Output files
 ------------

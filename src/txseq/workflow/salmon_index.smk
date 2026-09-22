@@ -1,5 +1,5 @@
 """========================
-pipeline_salmon_index.py
+salmon_index.smk
 ========================
 
 Overview
@@ -7,12 +7,10 @@ Overview
 
 This pipeline makes a Salmon SAF genome index. This type of index uses the full genome as a decoy: according to the Salmon authors this type of index 'does the best job in avoiding spurious alignments to annotated transcripts'.
 
-The pipeline is written using the `CGAT-core workflow management system <https://cgat-core.readthedocs.io/en/latest/>`_ .
-
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_salmon_index.yml` file.
+The pipeline requires a configured :file:`salmon_index.yaml` file.
 
 
 Input files
@@ -23,7 +21,7 @@ For building the SAF genome index the pipeline requires:
 #. A gzip compressed FASTA file containing the transcript sequences.
 #. A gzip compressed FASTA file containing the genome primary assembly sequences.
 
-The location of these three files must be specified in the 'pipeline_salmon.yml' file.
+The location of these three files must be specified in the 'salmon_index.yaml' file.
 
 
 Requirements

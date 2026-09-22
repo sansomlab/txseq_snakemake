@@ -11,7 +11,7 @@ This pipeline counts the number of reads mapped to transcript/gene models. It us
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_feature_counts.yml` file.
+The pipeline requires a configured :file:`feature_counts.yaml` file.
 
 Inputs
 ------

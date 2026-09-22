@@ -11,7 +11,7 @@ This pipeline computes QC statistic from BAM files. It uses the `Picard toolkit 
 Configuration
 -------------
 
-The pipeline requires a configured :file:`config_bamqc.yml` file.
+The pipeline requires a configured :file:`bamqc.yaml` file.
 
 Inputs
 ------
@@ -29,6 +29,9 @@ Requirements
 The following software is required:
 
 #. Picard
+#. Samtools
+#. R
+#. Kent_tools
 
 Output files
 ------------

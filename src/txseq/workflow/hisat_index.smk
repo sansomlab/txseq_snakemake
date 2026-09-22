@@ -7,13 +7,10 @@ Overview
 
 This pipeline makes a hisat2 HGFM index with transcripts.
 
-The pipeline is written using the `CGAT-core workflow management system <https://cgat-core.readthedocs.io/en/latest/>`_ .
-
-
 Configuration
 -------------
 
-The pipeline requires a configured :file:`pipeline_hisat_index.yml` file.
+The pipeline requires a configured :file:`hisat_index.yaml` file.
 
 
 
