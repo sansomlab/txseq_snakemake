@@ -11,8 +11,6 @@ fq_dir:
 
 paired: #True or false
 strand: 
-#Do we want to run a second pass? NOTE: This is in testing and immensely resource intensive- only do it if you need to specifically look at splicing. 
-second_pass: FALSE
 
 hisat_thread: 8
 hisat_runtime: 60

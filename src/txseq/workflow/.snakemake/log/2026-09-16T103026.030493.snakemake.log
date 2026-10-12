@@ -1,0 +1,10 @@
+ValueError in file "/users/sansom/wrf380/staging_package_txseq_smk_venv/txseq_snakemake/src/txseq/workflow/salmon.smk", line 78:
+Invalid file path or buffer object type: <class 'NoneType'>
+  File "/users/sansom/wrf380/staging_package_txseq_smk_venv/txseq_snakemake/src/txseq/workflow/salmon.smk", line 78, in <module>
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/txseq_snakemake/src/txseq/tasks/samples.py", line 170, in __init__
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 300, in _read
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 1904, in _make_engine
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/common.py", line 776, in get_handle
+  File "/gpfs3/users/sansom/wrf380/staging_package_txseq_smk_venv/lib/python3.14/site-packages/pandas/io/common.py", line 496, in _get_filepath_or_buffer
