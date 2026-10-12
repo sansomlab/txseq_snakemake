@@ -9,7 +9,7 @@ rundir:
 # The txseq sanitised Ensembl primary assembly
 #
 # If working on the KIR BMRC space, use e.g.
-#       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
+#       for human: /well/kir/mirror/txseq/GRCh38.115.dir/ensembl/ensembl.dir/api.dir/txseq.genome.fa.gz
 #       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
 #
 # For the mouse_hscs example, set to 
@@ -21,7 +21,7 @@ genome_fasta:
 # The txseq sanitised Ensembl transcript fasta sequences
 #
 # If working on the KIR BMRC space, use e.g. 
-#       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
+#       for human: /well/kir/mirror/txseq/GRCh38.115.dir/ensembl/ensembl.dir/api.dir/txseq.transcript.fa.gz
 #       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
 #
 # For the mouse_hscs example, set to 

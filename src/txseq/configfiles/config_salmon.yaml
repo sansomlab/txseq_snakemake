@@ -21,7 +21,7 @@ txseq:
   # to generate the sanitised genome, transcript fasta and gtf files 
   #
   # If working on the KIR BMRC space, use e.g.
-  #       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir
+  #       for human: /well/kir/mirror/txseq/GRCh38.115.dir/ensembl/ensembl.dir
   #       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/
   #
   # For the mouse_hscs example, set to 
@@ -33,7 +33,8 @@ txseq:
   # to generate the salmon index
   #
   # If working on the KIR BMRC space, use e.g.
-  #       for human: /well/kir/projects/mirror/txseq/GRCh38.110.dir/salmon.index.dir/salmon_index
+  #       for human salmon v1: /well/kir/projects/mirror/txseq/GRCh38.115.dir/salmon_v1_index/salmon_index
+ #        for human salmon v2: /well/kir/projects/mirror/txseq/GRCh38.115.dir/salmon_v2_index/salmon_index
   #       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/salmon.index.dir/salmon_index
   #
   # For the mouse_hscs example, set to 

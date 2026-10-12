@@ -8,7 +8,7 @@ rundir:
 # The txseq sanitised ensembl primary assembly
 #
 # If working on the KIR BMRC space, use e.g. 
-#       for human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
+#       for human: /well/kir/mirror/txseq/GRCh38.115.dir/ensembl/ensembl.dir/api.dir/txseq.genome.fa.gz
 #       for mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
 #
 # For the mouse_hscs example, set to 
@@ -19,7 +19,7 @@ primary_assembly:
 # The txseq sanitised ensembl GTF genset
 #
 # If working on the KIR BMRC space, use e.g. 
-#       e.g. human: /well/kir/mirror/txseq/GRCh38.110.dir/ensembl.dir/api.dir/txseq.geneset.gtf.gz
+#       e.g. human: /users/sansom/wrf380/devel/txseq_ensembl_115_for_mirror/ensembl.dir/api.dir/txseq.geneset.gtf.gz
 #       e.g. mouse: /well/kir/mirror/txseq/GRCm39.110.dir/ensembl.dir/api.dir/txseq.geneset.gtf.gz
 #
 # For the mouse_hscs example, set to 

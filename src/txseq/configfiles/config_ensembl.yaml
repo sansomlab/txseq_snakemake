@@ -10,7 +10,7 @@ rundir:
 #  e.g. for humans, a suitable file can be download from https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 #
 #  on the KIR BMRC platform, please use the files mirrored here:
-#      /well/kir/mirror/ensembl 
+#      /well/kir/mirror/ensembl/GRCh38.115.dir/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 #
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
@@ -22,7 +22,7 @@ primary_assembly:
 # e.g. for humans, a suitable file can be download from https://ftp.ensembl.org/pub/release-110/gtf/homo_sapiens/Homo_sapiens.GRCh38.110.gtf.gz
 #
 #  on the KIR BMRC platform, please use the files mirrored here:
-#      /well/kir/mirror/ensembl 
+#      /well/kir/mirror/ensembl/GRCh38.115.dir/Homo_sapiens.GRCh38.115.gtf.gz
 #
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.110.gtf.gz
@@ -34,7 +34,7 @@ geneset:
 # e.g. for humans, a suitable file can be download from https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
 #
 #  on the KIR BMRC platform, please use the files mirrored here:
-#      /well/kir/mirror/ensembl 
+#      /well/kir/mirror/ensembl/GRCh38.115.dir/Homo_sapiens.GRCh38.cdna.all.fa.gz
 #
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.cdna.all.fa.gz
@@ -46,7 +46,7 @@ cdna:
 # e.g. for humans, a suitable file can be download from https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
 #
 #  on the KIR BMRC platform, please use the files mirrored here:
-#      /well/kir/mirror/ensembl 
+#      /well/kir/mirror/ensembl/GRCh38.115.dir/Homo_sapiens.GRCh38.ncrna.fa.gz
 #
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.ncrna.fa.gz
@@ -59,7 +59,7 @@ ncrna:
 # see e.g. https://www.biostars.org/p/228498/
 #
 #  on the KIR BMRC platform, please use the files mirrored here:
-#      /well/kir/mirror/ensembl 
+#      /well/kir/mirror/ensembl/GRCh38.115.dir/GRCh38.p14.PAR.bed 
 #
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/GRCm39.PAR.bed
