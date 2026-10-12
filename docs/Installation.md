@@ -1,10 +1,12 @@
 # Installation
 
-## Install R dependencies
+## Install the pipeline
+
+### Install R dependencies
 
 The TXSeq pipeline requires R>=4.5 and the ``optparse`` ``tximeta`` and ``tximport`` packages.
 
-## Install the pipeline
+### Install the Python dependencies
 
 ```text
 module purge 
@@ -32,5 +34,5 @@ Rscript src/txseq/R/txseq/install.packages.R
 
 Install the txseq R library by running the following command from the bash shell:
 ```text
-R CMD INSTALL R/txseq
+R CMD INSTALL src/txseq/R/txseq
 ```
