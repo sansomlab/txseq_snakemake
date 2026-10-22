@@ -1,4 +1,7 @@
 # `Txseq`  ( Snakemake Implementation) 
+
+### Documentation : https://sansomlab.github.io/txseq_snakemake/
+
 > **⚠️ WARNING: `txseq`  is currently in pre-release and under active development. 
 >Please use it with caution and report any issues by opening a GitHub issue.**
  
