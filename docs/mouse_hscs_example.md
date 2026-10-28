@@ -154,7 +154,7 @@ To quantitate the data using the salmon.smk pipeline, we begin by fetching and e
 **IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
 The pipeline can then be run as follows :
 ```text
-  txseq salmon make full -v5 -p20
+  txseq salmon full --jobs 20
 ```
 The results of the pipeline are stored in the "csvdb" sqlite database and as a tximeta object in the "tximeta.dir/tximeta.RDS" for downstream analysis. Flat tables of TPMs can be retrieved from the database or from the "salmon.dir/salmon.transcripts.tpms.txt.gz" file.
 
