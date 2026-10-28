@@ -10,13 +10,14 @@ As with preparation of the sanitised genome sequences and gene annotations, it i
 Txseq has dedicated pipelines for building Salmon and Hisat2 indexes which can be used as follows.
 
 !!! note-square "Note"
-    If you are using the KIR BMRC workspace, Salmon and Hisat index built with txseq can be found in the "/well/kir/projects/mirror/txseq/" directory.
+    If you are using the KIR BMRC workspace, Salmon and Hisat index built with txseq can be found in the <kbd>/well/kir/projects/mirror/txseq/</kbd> directory.
 
 ## Building a Salmon Index
 
 In a suitably named directory, load the required modules and obtain the salmon_index configuration file with the following commands:
 
-```text
+<div class="nord" markdown="1">
+```py
     module purge
 	unset PYTHONPATH
 	source ./txseq_smk_venv/bin/activate
@@ -26,8 +27,11 @@ In a suitably named directory, load the required modules and obtain the salmon_i
 	txseq salmon_index config
 	emacs salmon_index.yaml 
 ```
+
+
 After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.transcript.fa.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
-```text
+
+```py
     txseq salmon_index full 
 ```
 
@@ -35,7 +39,8 @@ After editing the yaml to point to the location of the "txseq.genome.fa.gz" and 
 
 
 In a suitably named directory, loads the required modules obtain the hisat_index configuration file with the following commands:
-```text
+
+```py
     module purge
     unset PYTHONPATH
     source ./txseq_smk_venv/bin/activate
@@ -46,6 +51,7 @@ In a suitably named directory, loads the required modules obtain the hisat_index
     emacs hisat_index.yaml
 ```
 After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.geneset.gtf.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
-```text
+```py
     txseq hisat_index full --jobs 2
 ```
+</div>

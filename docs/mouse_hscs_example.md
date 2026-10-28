@@ -11,12 +11,14 @@ For this example we use paired end RNA-seq data from [Regan-Komito et al 'GM-CSF
 
 Make a suitable local folder and copy the samples.tsv and libraries.tsv for the "mouse_hscs" example into it. Here we choose to run the example in a folder with the path "~/work/hscs_example"
 
-```text
+<div class="nord" markdown="1">
+```py
   mkdir ~/work/txseq_hscs_example
   cd ~/work/txseq_hscs_example
   cp -r /path/to/txseq/examples/mouse_hscs/* .
   cp -r /path/to/txseq/reports .
 ```
+</div>
 
 Edit the txseq/libraries.tsv file to point to the location of the FASTQ files retrieved from the ENA on your system.
 
@@ -44,7 +46,8 @@ The example requires Salmon and Hisat2 indexes. To build these, follow the [Buil
 
 First we run the [FastQC tool](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) using the fastqc.smk pipeline. Get a copy of the configuration file and edit appropriately to ensure that the correct "libraries.tsv" and "samples.tsv" files paths are set.
 
-```text
+<div class="nord" markdown="1">
+```py
   module purge
   unset PYTHONPATH
   source ./txseq_smk_venv/bin/activate
@@ -58,9 +61,10 @@ First we run the [FastQC tool](https://www.bioinformatics.babraham.ac.uk/project
 
 The pipeline can then be run as follows:
 
-```text
+```py
   txseq fastqc full --jobs 20 
 ```
+</div>
 
 The pipeline parses and store the FastQC output into sqlite database in a file called "csvdb". To visualise the results you can use the associated R Markdown Report ("reports/fastqc.Rmd") in Rstudio.
 
@@ -69,7 +73,8 @@ The pipeline parses and store the FastQC output into sqlite database in a file c
 
 Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and hisat index:
 
-```text
+<div class="nord" markdown="1">
+```py
   module purge
   unset PYTHONPATH
   source ./txseq_smk_venv/bin/activate
@@ -83,7 +88,7 @@ Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the 
 ```
   
 The pipeline can then be run as follows:
-```text
+```py
   txseq hisat full --jobs 20
 ```
 The output BAM files are located in the "hisat.dir" sub-directory.
@@ -92,7 +97,7 @@ The output BAM files are located in the "hisat.dir" sub-directory.
 
 After mapping with Hisat2, post-mapping QC statistics are computed using the bamqc.smk pipeline. This pipeline runs several [Picard](https://broadinstitute.github.io/picard/) tools including *CollectRnaSeqMetrics*, *EstimateLibraryComplexity*, *AlignmentSummaryMetrics* and *CollectInsertSizeMetrics* as well as some custom scripts. 
 
-```text
+```py
   module purge
   module load R/4.5.1-gfbf-2023a-bare-noSciPy 
   unset PYTHONPATH
@@ -110,16 +115,19 @@ After mapping with Hisat2, post-mapping QC statistics are computed using the bam
 **IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
 
 The pipeline can then be run as follows:
-```text
+```py
   txseq bamqc full --jobs 50
 ```
+</div>
+
 The results are saved in an sqlite database in the "csvdb" file. 
 
 ## 7. Quantitation with FeatureCounts
 
 Count tables can be extracted from the BAM file using the feature_counts.smk pipeline. 
 
-```text
+<div class="nord" markdown="1">
+```py
   module purge
   unset PYTHONPATH
   source ./txseq_smk_venv/bin/activate
@@ -131,7 +139,7 @@ Count tables can be extracted from the BAM file using the feature_counts.smk pip
   emacs pipeline_feature_counts.yml # edit the configuration file as appropriate
 ```
 The pipeline can then be run as follows:
-```text
+```py
   txseq feature_counts full --jobs 20
 ```
 The results are saved in an sqlite database in the "csvdb" file. 
@@ -139,7 +147,7 @@ The results are saved in an sqlite database in the "csvdb" file.
 ## 8. Quantitation with Salmon
 
 To quantitate the data using the salmon.smk pipeline, we begin by fetching and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and salmon index:
-```text
+```py
   module purge
   module load R/4.5.1-gfbf-2023a-bare-noSciPy
   unset PYTHONPATH
@@ -153,7 +161,7 @@ To quantitate the data using the salmon.smk pipeline, we begin by fetching and e
 ```
 **IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
 The pipeline can then be run as follows :
-```text
+```py
   txseq salmon full --jobs 20
 ```
 The results of the pipeline are stored in the "csvdb" sqlite database and as a tximeta object in the "tximeta.dir/tximeta.RDS" for downstream analysis. Flat tables of TPMs can be retrieved from the database or from the "salmon.dir/salmon.transcripts.tpms.txt.gz" file.
@@ -179,3 +187,4 @@ Together with the post-mapping QC report this analysis is useful for the identif
 After running the salmon pipeline differential expression analysis can be performed using the "differential_expression.Rmd" R Markdown report template.
 
 Make a copy of this file and open it in Rstudio to perform the analysis. 
+</div>

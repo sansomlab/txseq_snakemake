@@ -66,7 +66,7 @@ A tab-separated text file with the following mandatory columns
 * "fastq_path": For SE libraries, the fastq file path. For PE libraries: the 
    read 1 fastq: the path for read 2 is imputed by the pipelines.
 
-!!! note-sqaure "Note"
+!!! note-square "Note"
     When samples have been sequenced across multiple lanes, use one line per lane. Comma-separated lane and fastq_path values are not supported. Quality control analysis is performed at lane level; lanes will be aggregated for quantitation.
 
 !!! note-square "Note"
@@ -82,23 +82,27 @@ An example libraries.tsv file is shown below:
 The txseq pipelines are written using [snakemake](https://snakemake.readthedocs.io/en/stable/) pipelining system. Here we illustrate how the pipelines can be run using the salmon pipeline as an example.
 
 Following installation, to find the available pipelines run:
-```text
+
+<div class="nord" markdown="1"> 
+```py
   txseq -h
 ```
 Next generate a configuration yml file:
-```text
+```py
   txseq salmon config 
 ```
 To fully run e.g. the txseq salmon pipeline the following command is used:
-```text
+```py
   txseq salmon full --jobs 20
 ``` 
 The "--jobs 20" flag tells the pipeline to launch upto 20 jobs in parallel: this number should be set according to the sample number and availability of compute resources.
 
 It is also possible to run individual pipeline tasks to get a feel of what each one is doing. Individual tasks can then be executed by name, e.g.
-```text
+```py
   txseq salmon quant --jobs 20
 ```
+</div>
+
 !!! note-square "Note"
     If any upstream tasks are out of date they will automatically be run before the named task is executed.
 

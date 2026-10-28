@@ -39,12 +39,14 @@ PAR region locations can be retrieved from e.g. the [Genome Reference Consortium
 
 The human Ensembl genome and annotation files (for Ensembl release 115) can be retrieved using the following commands:
 
-```text
+<div class="nord" markdown="1">
+```py
     wget https://ftp.ensembl.org/pub/release-115/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
     wget https://ftp.ensembl.org/pub/release-115/gtf/homo_sapiens/Homo_sapiens.GRCh38.115.gtf.gz
     wget https://ftp.ensembl.org/pub/release-115/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
     wget https://ftp.ensembl.org/pub/release-115/fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
 ```
+</div>
     
 The [human PAR coordinates](https://www.ncbi.nlm.nih.gov/grc/human) should then be used to prepare a bed file, for example for the GRCh38.p14 release of the human genome the (tab-separated) file should look like this:
 
@@ -58,12 +60,14 @@ The [human PAR coordinates](https://www.ncbi.nlm.nih.gov/grc/human) should then 
 
 The mouse Ensembl genome and annotation files (for Ensembl release 115) can be retrieved using the following commands:
 
-```text
+<div class="nord" markdown="1">
+```py
     wget https://ftp.ensembl.org/pub/release-115/gtf/mus_musculus/Mus_musculus.GRCm39.115.gtf.gz
     wget https://ftp.ensembl.org/pub/release-115/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
     wget https://ftp.ensembl.org/pub/release-115/fasta/mus_musculus/cdna/Mus_musculus.GRCm39.cdna.all.fa.gz
     wget https://ftp.ensembl.org/pub/release-115/fasta/mus_musculus/ncrna/Mus_musculus.GRCm39.ncrna.fa.gz
 ```
+</div>
 
 The [mouse PAR locations](https://www.ncbi.nlm.nih.gov/grc/mouse) should thenbe used to prepare a bed file, for example for the GRCm39 release of the mouse genome the (tab-separated) file should look like this:
 
@@ -76,23 +80,25 @@ It is recommended to prepare txseq-sanitised genome sequences and annotations in
 
 In a suitable directory, load the required modules and obtain a copy of the ensembl.smk configuration file:
 
-```text
-    	module purge
-		unset PYTHONPATH
-		source ./txseq_smk_venv/bin/activate
-		module load BEDTools/2.31.0-GCC-12.3.0
-		mkdir ensembl
-		cd ensembl
-		txseq ensembl config
-		emacs ensembl.yaml
+<div class="nord" markdown="1">
+```py
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load BEDTools/2.31.0-GCC-12.3.0
+mkdir ensembl
+cd ensembl
+txseq ensembl config
+emacs ensembl.yaml
 ```
 
     
 After editing the .yml file to provide the locations of the Ensembl genome, Ensembl annotations and the PAR bed file, execute the pipeline with the following command:
 
-```text
+```py
     txseq ensembl full
 ```
+</div>
     
 The output of the pipeline is an "api.dir" folder that contains the following files that can be used to build indexes for RNA-seq mapping and quantification tools:
 
