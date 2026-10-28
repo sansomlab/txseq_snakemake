@@ -85,21 +85,21 @@ Following installation, to find the available pipelines run:
 
 <div class="nord" markdown="1"> 
 ```py
-  txseq -h
+txseq -h
 ```
 Next generate a configuration yml file:
 ```py
-  txseq salmon config 
+txseq salmon config 
 ```
 To fully run e.g. the txseq salmon pipeline the following command is used:
 ```py
-  txseq salmon full --jobs 20
+txseq salmon full --jobs 20
 ``` 
 The "--jobs 20" flag tells the pipeline to launch upto 20 jobs in parallel: this number should be set according to the sample number and availability of compute resources.
 
 It is also possible to run individual pipeline tasks to get a feel of what each one is doing. Individual tasks can then be executed by name, e.g.
 ```py
-  txseq salmon quant --jobs 20
+txseq salmon quant --jobs 20
 ```
 </div>
 

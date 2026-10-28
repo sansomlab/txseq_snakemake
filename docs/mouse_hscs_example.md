@@ -13,10 +13,10 @@ Make a suitable local folder and copy the samples.tsv and libraries.tsv for the 
 
 <div class="nord" markdown="1">
 ```py
-  mkdir ~/work/txseq_hscs_example
-  cd ~/work/txseq_hscs_example
-  cp -r /path/to/txseq/examples/mouse_hscs/* .
-  cp -r /path/to/txseq/reports .
+mkdir ~/work/txseq_hscs_example
+cd ~/work/txseq_hscs_example
+cp -r /path/to/txseq/examples/mouse_hscs/* .
+cp -r /path/to/txseq/reports .
 ```
 </div>
 
@@ -48,15 +48,15 @@ First we run the [FastQC tool](https://www.bioinformatics.babraham.ac.uk/project
 
 <div class="nord" markdown="1">
 ```py
-  module purge
-  unset PYTHONPATH
-  source ./txseq_smk_venv/bin/activate
-  module load FastQC/0.12.1-Java-11
-  cd ~/work/txseq_hscs_example
-  mkdir fastqc
-  cd fastqc
-  txseq fastqc config # get a copy of the default configuration file
-  emacs fastqc.yaml # edit the configuration file as appropriate
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load FastQC/0.12.1-Java-11
+cd ~/work/txseq_hscs_example
+mkdir fastqc
+cd fastqc
+txseq fastqc config # get a copy of the default configuration file
+emacs fastqc.yaml # edit the configuration file as appropriate
 ```
 
 The pipeline can then be run as follows:
@@ -75,16 +75,16 @@ Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the 
 
 <div class="nord" markdown="1">
 ```py
-  module purge
-  unset PYTHONPATH
-  source ./txseq_smk_venv/bin/activate
-  module load HISAT2/2.2.1-gompi-2023a
-  module load SAMtools/1.18-GCC-12.3.0
-  cd ~/work/txseq_hscs_example
-  mkdir hisat
-  cd hisat
-  txseq hisat config # get a copy of the default configuration file
-  emacs pipeline_hisat.yml # edit the configuration file as appropriate
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load HISAT2/2.2.1-gompi-2023a
+module load SAMtools/1.18-GCC-12.3.0
+cd ~/work/txseq_hscs_example
+mkdir hisat
+cd hisat
+txseq hisat config # get a copy of the default configuration file
+emacs pipeline_hisat.yml # edit the configuration file as appropriate
 ```
   
 The pipeline can then be run as follows:
@@ -98,25 +98,25 @@ The output BAM files are located in the "hisat.dir" sub-directory.
 After mapping with Hisat2, post-mapping QC statistics are computed using the bamqc.smk pipeline. This pipeline runs several [Picard](https://broadinstitute.github.io/picard/) tools including *CollectRnaSeqMetrics*, *EstimateLibraryComplexity*, *AlignmentSummaryMetrics* and *CollectInsertSizeMetrics* as well as some custom scripts. 
 
 ```py
-  module purge
-  module load R/4.5.1-gfbf-2023a-bare-noSciPy 
-  unset PYTHONPATH
-  source ./txseq_smk_venv/bin/activate
-  module load picard/2.25.1-Java-11
-  module load SAMtools/1.18-GCC-12.3.0
-  module load Kent_tools/468-GCC-12.3.0
-  cd ~/work/txseq_hscs_example
-  mkdir bamqc
-  cd bamqc
-  txseq bamqc config # get a copy of the default configuration file
-  emacs pipeline_bamqc.yml # edit the configuration file as appropriate
+module purge
+module load R/4.5.1-gfbf-2023a-bare-noSciPy 
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load picard/2.25.1-Java-11
+module load SAMtools/1.18-GCC-12.3.0
+module load Kent_tools/468-GCC-12.3.0
+cd ~/work/txseq_hscs_example
+mkdir bamqc
+cd bamqc
+txseq bamqc config # get a copy of the default configuration file
+emacs pipeline_bamqc.yml # edit the configuration file as appropriate
 ```
 
-**IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
+>!!! exclamation "**IMPORTANT** You must unset the `PYTHONPATH` after loading the R module. "
 
 The pipeline can then be run as follows:
 ```py
-  txseq bamqc full --jobs 50
+txseq bamqc full --jobs 50
 ```
 </div>
 
@@ -128,19 +128,19 @@ Count tables can be extracted from the BAM file using the feature_counts.smk pip
 
 <div class="nord" markdown="1">
 ```py
-  module purge
-  unset PYTHONPATH
-  source ./txseq_smk_venv/bin/activate
-  module load Subread/2.0.6-GCC-12.3.0
-  cd ~/work/txseq_hscs_example
-  mkdir feature_counts
-  cd feature_counts
-  txseq feature_counts config # get a copy of the default configuration file
-  emacs pipeline_feature_counts.yml # edit the configuration file as appropriate
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load Subread/2.0.6-GCC-12.3.0
+cd ~/work/txseq_hscs_example
+mkdir feature_counts
+cd feature_counts
+txseq feature_counts config # get a copy of the default configuration file
+emacs pipeline_feature_counts.yml # edit the configuration file as appropriate
 ```
 The pipeline can then be run as follows:
 ```py
-  txseq feature_counts full --jobs 20
+txseq feature_counts full --jobs 20
 ```
 The results are saved in an sqlite database in the "csvdb" file. 
 
@@ -148,21 +148,22 @@ The results are saved in an sqlite database in the "csvdb" file.
 
 To quantitate the data using the salmon.smk pipeline, we begin by fetching and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and salmon index:
 ```py
-  module purge
-  module load R/4.5.1-gfbf-2023a-bare-noSciPy
-  unset PYTHONPATH
-  module load Salmon/2.8.0-GCCcore-12.3.0
-  source ./txseq_smk_venv/bin/activate
-  cd ~/work/txseq_hscs_example
-  mkdir salmon
-  cd salmon
-  txseq salmon config # get a copy of the default configuration file
-  emacs pipeline_salmon.yml # edit the configuration file as appropriate
+module purge
+module load R/4.5.1-gfbf-2023a-bare-noSciPy
+unset PYTHONPATH
+module load Salmon/2.8.0-GCCcore-12.3.0
+source ./txseq_smk_venv/bin/activate
+cd ~/work/txseq_hscs_example
+mkdir salmon
+cd salmon
+txseq salmon config # get a copy of the default configuration file
+emacs pipeline_salmon.yml # edit the configuration file as appropriate
 ```
-**IMPORTANT** You must unset the PYTHONPATH after loading the R module. 
+>!!! exclamation "**IMPORTANT** You must unset the `PYTHONPATH` after loading the R module. "
+
 The pipeline can then be run as follows :
 ```py
-  txseq salmon full --jobs 20
+txseq salmon full --jobs 20
 ```
 The results of the pipeline are stored in the "csvdb" sqlite database and as a tximeta object in the "tximeta.dir/tximeta.RDS" for downstream analysis. Flat tables of TPMs can be retrieved from the database or from the "salmon.dir/salmon.transcripts.tpms.txt.gz" file.
 

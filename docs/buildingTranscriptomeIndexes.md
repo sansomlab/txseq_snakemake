@@ -18,21 +18,21 @@ In a suitably named directory, load the required modules and obtain the salmon_i
 
 <div class="nord" markdown="1">
 ```py
-    module purge
-	unset PYTHONPATH
-	source ./txseq_smk_venv/bin/activate
-	module load Salmon/2.8.0-GCCcore-12.3.0
-	mkdir salmon_index
-	cd salmon_index
-	txseq salmon_index config
-	emacs salmon_index.yaml 
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load Salmon/2.8.0-GCCcore-12.3.0
+mkdir salmon_index
+cd salmon_index
+txseq salmon_index config
+emacs salmon_index.yaml 
 ```
 
 
 After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.transcript.fa.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
 
 ```py
-    txseq salmon_index full 
+txseq salmon_index full 
 ```
 
 ## Building a Hisat2 Index
@@ -41,17 +41,17 @@ After editing the yaml to point to the location of the "txseq.genome.fa.gz" and 
 In a suitably named directory, loads the required modules obtain the hisat_index configuration file with the following commands:
 
 ```py
-    module purge
-    unset PYTHONPATH
-    source ./txseq_smk_venv/bin/activate
-    module load HISAT2/2.2.1-gompi-2023a
-    mkdir hisat_index
-    cd hisat_index
-    txseq hisat_index config
-    emacs hisat_index.yaml
+module purge
+unset PYTHONPATH
+source ./txseq_smk_venv/bin/activate
+module load HISAT2/2.2.1-gompi-2023a
+mkdir hisat_index
+cd hisat_index
+txseq hisat_index config
+emacs hisat_index.yaml
 ```
 After editing the yaml to point to the location of the "txseq.genome.fa.gz" and "txseq.geneset.gtf.gz" files (see the "Genomes and Annotations" section), and configuring the parameters as desired, the pipeline can be executed with the following command:
 ```py
-    txseq hisat_index full --jobs 2
+txseq hisat_index full --jobs 2
 ```
 </div>
