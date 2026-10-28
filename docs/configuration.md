@@ -5,7 +5,7 @@
 Txseq requires two tab-seperated files to be provided that specify the sample and sequencing library information. It is not necessary to rename or merge FASTQ files before running txseq: the pipelines will automatically combine sequence data for the same samples and label outputs by the given "sample_id".
 
 
-### (1) "samples.tsv"
+### (1) **samples.tsv**
 
 A tab-separated text file with the following mandatory columns:
 
@@ -54,7 +54,7 @@ example with columns such as:
 
     {{ read_table('../examples/mouse_hscs/samples.tsv') }}
 
-### (2) "libraries.tsv" (optional)
+### (2) **libraries.tsv** (optional)
 
 Required when starting from FASTQ files.
 
