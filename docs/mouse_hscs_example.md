@@ -5,11 +5,11 @@
 For this example we use paired end RNA-seq data from [Regan-Komito et al 'GM-CSF drives dysregulated hematopoietic stem cell activity and pathogenic extramedullary myelopoiesis in experimental spondyloarthritis' Nature Communicaitons 2020](https://doi.org/10.1038/s41467-019-13853-4). The data can be retrieved from the European Nucleotide Archive (ENA) under accession [PRJNA521342](https://www.ebi.ac.uk/ena/browser/view/PRJNA521342).
 
 !!! note-square "Note"
-    If you are working in the Kennedy workspace on the Oxford BMRC cluster, these data are already available in the "/well/kir/projects/mirror/ena/PRJNA521342/" folder.
+    If you are working in the Kennedy workspace on the Oxford BMRC cluster, these data are already available in the <kbd>/well/kir/projects/mirror/ena/PRJNA521342/</kbd> folder.
 
 ## 1. Getting the configuration files and report templates
 
-Make a suitable local folder and copy the samples.tsv and libraries.tsv for the "mouse_hscs" example into it. Here we choose to run the example in a folder with the path "~/work/hscs_example"
+Make a suitable local folder and copy the samples.tsv and libraries.tsv for the "mouse_hscs" example into it. Here we choose to run the example in a folder with the path _**~/work/hscs_example**_
 
 <div class="nord" markdown="1">
 ```py
@@ -20,7 +20,7 @@ Make a suitable local folder and copy the samples.tsv and libraries.tsv for the 
 ```
 </div>
 
-Edit the txseq/libraries.tsv file to point to the location of the FASTQ files retrieved from the ENA on your system.
+Edit the _**txseq/libraries.tsv**_ file to point to the location of the FASTQ files retrieved from the ENA on your system.
 
 ## 2. Retrieving and preparing annotations 
 
