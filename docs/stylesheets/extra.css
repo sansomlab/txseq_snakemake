@@ -1102,15 +1102,16 @@
 }
 .md-typeset .admonition.note-square,
 .md-typeset details.note-square {
-  border-color: rgb(255,255,0);
+  border-color: rgb(171, 184, 230);
 }
 .md-typeset .note-square > .admonition-title,
 .md-typeset .note-square > summary {
-  background-color: rgba(255,255,0, 0.2);
+  color:rgb(225, 225, 236);
+  background-color: rgba(15,31,71);
 }
 .md-typeset .note-square > .admonition-title::before,
 .md-typeset .note-square > summary::before {
-  background-color: rgb(25,25,112);
+  background-color: rgb(237, 237, 243);
   -webkit-mask-image: var(--md-admonition-icon--note-square);
           mask-image: var(--md-admonition-icon--note-square);
 }

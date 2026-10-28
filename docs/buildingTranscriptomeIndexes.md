@@ -9,7 +9,7 @@ As with preparation of the sanitised genome sequences and gene annotations, it i
 
 Txseq has dedicated pipelines for building Salmon and Hisat2 indexes which can be used as follows.
 
-!!! Note
+!!! note-square "Note"
     If you are using the KIR BMRC workspace, Salmon and Hisat index built with txseq can be found in the "/well/kir/projects/mirror/txseq/" directory.
 
 ## Building a Salmon Index

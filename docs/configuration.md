@@ -23,7 +23,7 @@ example with columns such as:
 * "genotype"
 * "batch"
 
-!!! Note
+!!! note-square "Note"
     Strand values of 'none', 'forward' and 'reverse' will be used to set parameter values in txseq pipelines as follows:
     
     * "none":  data is treated as unstranded. This is appropriate for e.g. Illumina Truseq and most single-cell protocols. 
@@ -66,10 +66,10 @@ A tab-separated text file with the following mandatory columns
 * "fastq_path": For SE libraries, the fastq file path. For PE libraries: the 
    read 1 fastq: the path for read 2 is imputed by the pipelines.
 
-!!! Note
+!!! note-sqaure "Note"
     When samples have been sequenced across multiple lanes, use one line per lane. Comma-separated lane and fastq_path values are not supported. Quality control analysis is performed at lane level; lanes will be aggregated for quantitation.
 
-!!! Note
+!!! note-square "Note"
     Paired-end fastq files must end with "1|2.fastq.gz" or "fastq.1|2.gz". For paired end samples the Read 1 and Read 2 FASTQ files for the same lane must be located in the same folder.
 
 An example libraries.tsv file is shown below:
@@ -99,7 +99,7 @@ It is also possible to run individual pipeline tasks to get a feel of what each 
 ```text
   txseq salmon quant --jobs 20
 ```
-!!! Note
+!!! note-square "Note"
     If any upstream tasks are out of date they will automatically be run before the named task is executed.
 
 

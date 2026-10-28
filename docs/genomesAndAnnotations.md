@@ -14,8 +14,8 @@ In general, for RNA-seq analysis it is best to use genome sequences and gene ann
 The txseq repository uses genome sequences and gene annotations retrieved from [Ensembl](https://www.ensembl.org/index.html). These are pre-processed using the "ensembl.smk" pipeline which addresses all the issues above and outputs sanitised genome sequence and annotation files.
 
 
-!!! Note
-    If you are using the KIR BMRC workspace, sanitised genome sequences and gene annotations can be found in the "/well/kir/projects/mirror/txseq/" directory.
+!!! note-square "Note"
+    If you are using the KIR BMRC workspace, sanitised genome sequences and gene annotations can be found in the <kbd>/well/kir/projects/mirror/txseq/</kbd> directory.
 
 
 

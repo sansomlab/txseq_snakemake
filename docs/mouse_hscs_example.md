@@ -4,7 +4,7 @@
 
 For this example we use paired end RNA-seq data from [Regan-Komito et al 'GM-CSF drives dysregulated hematopoietic stem cell activity and pathogenic extramedullary myelopoiesis in experimental spondyloarthritis' Nature Communicaitons 2020](https://doi.org/10.1038/s41467-019-13853-4). The data can be retrieved from the European Nucleotide Archive (ENA) under accession [PRJNA521342](https://www.ebi.ac.uk/ena/browser/view/PRJNA521342).
 
-!!! Note 
+!!! note-square "Note"
     If you are working in the Kennedy workspace on the Oxford BMRC cluster, these data are already available in the "/well/kir/projects/mirror/ena/PRJNA521342/" folder.
 
 ## 1. Getting the configuration files and report templates
@@ -22,7 +22,7 @@ Edit the txseq/libraries.tsv file to point to the location of the FASTQ files re
 
 ## 2. Retrieving and preparing annotations 
 
-!!! Note 
+!!! note-square "Note" 
     If you are working in the Kennedy workspace on the Oxford BMRC cluster, the required txseq annotations are available in the mirror folder and this step can be skipped.
   
 Follow the instructions on the [Genomes and Annotations](genomesAndAnnotations.md) page to:
@@ -34,7 +34,7 @@ Follow the instructions on the [Genomes and Annotations](genomesAndAnnotations.m
   
 ## 3 Building the Salmon and Hisat2 transcriptome indexes
 
-!!! Note 
+!!! note-square "Note" 
     If you are working in the Kennedy workspace on the Oxford BMRC cluster, txseq mouse transcriptome indexes have already been built in the mirror folder and this step can be skipped.
 
 The example requires Salmon and Hisat2 indexes. To build these, follow the [Building transcriptome indexes](buildingTranscriptomeIndexes.md) instructions.
