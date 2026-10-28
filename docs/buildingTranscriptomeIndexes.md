@@ -20,7 +20,7 @@ In a suitably named directory, load the required modules and obtain the salmon_i
     module purge
 	unset PYTHONPATH
 	source ./txseq_smk_venv/bin/activate
-	module load Salmon/1.11.4-GCC-12.3.0
+	module load Salmon/2.8.0-GCCcore-12.3.0
 	mkdir salmon_index
 	cd salmon_index
 	txseq salmon_index config
