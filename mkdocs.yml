@@ -17,7 +17,7 @@ nav:
 
 theme:
   name: material
-  logo: images/KIR_Research_Computing_Hub_layered_logo_favicon.svg
+  logo: images/sansomlab_logo.png
   favicon: images/kir_standalone_logo.png 
    # 404 page
   static_templates:
