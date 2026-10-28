@@ -143,7 +143,7 @@ To quantitate the data using the salmon.smk pipeline, we begin by fetching and e
   module purge
   module load R/4.5.1-gfbf-2023a-bare-noSciPy
   unset PYTHONPATH
-  module load Salmon/1.11.4-GCC-12.3.0
+  module load Salmon/2.8.0-GCCcore-12.3.0
   source ./txseq_smk_venv/bin/activate
   cd ~/work/txseq_hscs_example
   mkdir salmon
