@@ -18,7 +18,7 @@ nav:
 theme:
   name: material
   logo: images/sansomlab_logo.png
-  favicon: images/kir_standalone_logo.png 
+  favicon: images/sansomlab_logo.png 
    # 404 page
   static_templates:
     - 404.html
@@ -131,3 +131,6 @@ extra_css:
   - stylesheets/cards.css
   - stylesheets/colors.css
   - stylesheets/side_bar_menu.css
+
+
+copyright : TXseq is licensed under a <a rel="noopener" target="_blank" href="https://github.com/sansomlab/txseq_snakemake/blob/main/LICENSE">MIT License</a>
