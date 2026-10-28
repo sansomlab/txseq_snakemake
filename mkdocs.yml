@@ -133,6 +133,7 @@ extra_css:
   - stylesheets/side_bar_menu.css
   - stylesheets/code_block_colour_nord.css
   - stylesheets/gradient_peek.css
+  - stylesheets/header_weight.css
 
 
 copyright : TXseq is licensed under a <a rel="noopener" target="_blank" href="https://github.com/sansomlab/txseq_snakemake/blob/main/LICENSE">MIT License</a>
