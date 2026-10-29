@@ -10,7 +10,7 @@
 # installs only what is missing. Existing packages are not upgraded.
 #
 # Usage (run on a login node; compute nodes have no internet access):
-#   Rscript src/txseq/R/install.R [--lib=/path/to/library] [--no-suggests]
+#   Rscript src/txseq/R/txseq/install.R [--lib=/path/to/library] [--no-suggests]
 
 args <- commandArgs(trailingOnly = TRUE)
 lib_arg <- sub("^--lib=", "", grep("^--lib=", args, value = TRUE))
@@ -23,9 +23,12 @@ script_dir <- if (length(file_arg)) {
 } else {
   getwd()
 }
-pkg_dir <- file.path(script_dir, "txseq")
-if (!file.exists(file.path(pkg_dir, "DESCRIPTION"))) {
-  stop("Cannot find the txseq package (no DESCRIPTION file) at ", pkg_dir)
+# Works whether this script sits inside the package directory or beside it
+candidates <- c(script_dir, file.path(script_dir, "txseq"))
+pkg_dir <- candidates[file.exists(file.path(candidates, "DESCRIPTION"))][1]
+if (is.na(pkg_dir)) {
+  stop("Cannot find the txseq package (no DESCRIPTION file) in ",
+       paste(candidates, collapse = " or "))
 }
 
 # Target library: --lib if given, otherwise the first writable library path
