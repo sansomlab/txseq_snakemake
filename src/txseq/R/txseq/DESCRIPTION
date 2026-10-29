@@ -1,0 +1,20 @@
+Package: txseq
+Type: Package
+Title: Helper Functions for RNA-seq Data Analysis
+Version: 0.1.0
+Authors@R: person("Stephen", "Sansom", email = "snsansom@gmail.com",
+                  role = c("aut", "cre"))
+Description: Provides helper functions for RNA-seq data analysis, including
+    quality control, normalisation, clustering, principal component analysis,
+    differential expression plotting and database access, for use with the
+    txseq Snakemake pipelines.
+License: MIT + file LICENSE
+URL: https://github.com/sansomlab/txseq_snakemake
+BugReports: https://github.com/sansomlab/txseq_snakemake/issues
+Imports: ggplot2, cba, RSQLite, ggrepel, RColorBrewer, DBI, gridExtra, dendsort
+Suggests: apeglm, bookdown, ComplexHeatmap, DESeq2, dplyr, fastcluster,
+    genefilter, ggrastr, gplots, gsfisher, hexbin, knitr, markdown, openxlsx,
+    optparse, pander, psych, reshape2, tximeta, umap, vsn
+Remotes: sansomlab/gsfisher
+RoxygenNote: 7.3.1
+Encoding: UTF-8
