@@ -127,8 +127,7 @@ rule first_pass:
     threads:
         config["hisat_thread"],
     resources:
-        mem_mb=config["hisat_memory"],
-        runtime=config["hisat_runtime"]
+        **RESOURCES,
     log:
         os.path.join(config["rundir"],"hisat.dir", "{samp}.log")
     shell:

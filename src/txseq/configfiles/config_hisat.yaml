@@ -10,11 +10,9 @@ libraries: ./path/to/libraries.tsv
 fq_dir:
 
 paired: #True or false
-strand: 
+strand: #forward, reverse or none
 
-hisat_thread: 8
-hisat_runtime: 60
-hisat_memory: 15000
+
 txseq:
   # Path to the location where the "txseq ensembl" pipeline was run
   # to generate the sanitised genome, transcript fasta and gtf files 
@@ -45,9 +43,9 @@ hisat:
   options: --dta --score-min L,0.0,-0.2
 
 resources:
-    threads: 1
-    mem_mb: 1000
-    runtime: 60
+    threads: 8
+    mem_mb: 15000
+    runtime: 300
     slurm_partition: short
     slurm_account: kir.prj
 
