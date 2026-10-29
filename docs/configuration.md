@@ -71,6 +71,7 @@ A tab-separated text file with the following mandatory columns
 
 !!! note-square "Note"
     Paired-end fastq files must end with "1|2.fastq.gz" or "fastq.1|2.gz". For paired end samples the Read 1 and Read 2 FASTQ files for the same lane must be located in the same folder.
+    Fastq files can be renamed, for example to convert from sample_1_R1_001.fastq.gz to sample_1_R1.fastq.gz run ```for file in *_001.fastq.gz; do    mv "$file" "${file/_001/}"; done``` This can also be tested using echo instead of mv! 
 
 !!! table gradient-peek "An example libraries.tsv file is shown below:"
 

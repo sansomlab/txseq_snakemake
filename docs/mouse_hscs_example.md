@@ -22,6 +22,8 @@ cp -r /path/to/txseq/reports .
 
 Edit the _**txseq/libraries.tsv**_ file to point to the location of the FASTQ files retrieved from the ENA on your system.
 
+The examples can also be found on github [here](https://github.com/sansomlab/txseq_snakemake/blob/main/examples/mouse_hscs/)
+
 ## 2. Retrieving and preparing annotations 
 
 !!! note-square "Note" 
@@ -71,7 +73,7 @@ The pipeline parses and store the FastQC output into sqlite database in a file c
 
 ## 5. Mapping with Hisat2
 
-Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and hisat index:
+Next we map the data using the hisat.smk pipeline. Fetch and edit a copy of the configuration file to set the paths to the "libraries.tsv" and "samples.tsv" files and hisat index. The strand parameter can take the arguments "forward", "reverse" or "none".
 
 <div class="nord" markdown="1">
 ```py
