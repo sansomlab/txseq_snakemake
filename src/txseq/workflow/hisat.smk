@@ -115,7 +115,7 @@ rule full:
 ## first pass of hisat. 
 rule first_pass:
     input:
-        os.path.join(config["fq_dir"],"{samp}_1.fq.gz")
+        
     output:
         os.path.join(config["rundir"],"hisat.dir", "{samp}.bam")
     params:
