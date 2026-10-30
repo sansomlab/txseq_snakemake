@@ -70,5 +70,10 @@ resources:
     threads: 1
     mem_mb: 500
     runtime: 60
-    slurm_partition: short
-    slurm_account: kir.prj
+
+# Slurm settings applied to every job submitted by this workflow.
+# The account is mandatory: set it to a Slurm account you are associated with
+# (list them with: sacctmgr -nP show assoc user=$USER format=Account).
+slurm:
+    account: slurm_account
+    partition: short

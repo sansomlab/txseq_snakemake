@@ -68,7 +68,12 @@ PARAMS.update(config)
 S = T.samples(sample_tsv = config.get("samples"),
         library_tsv = config.get("libraries"))
 
-RESOURCES = config.get("resources", {})
+# Per-rule job resources (mem_mb, runtime, ...) from the `resources:` section
+# of the config. "threads" is a directive, not a resource, so it is held
+# separately. The Slurm account and partition are cluster-level settings
+# that the txseq CLI applies to every job via --default-resources.
+RESOURCES = dict(config.get("resources") or {})
+THREADS = RESOURCES.pop("threads", 1)
 
 #get bam file name
 def bam_file(sample_id):
@@ -125,7 +130,7 @@ rule count:
         featurecounts_strand=lambda wildcards: featurecounts_strand(wildcards.samp),
         featurecounts_options=featurecounts_options,
         paired_options=paired_options
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -158,7 +163,7 @@ rule loadCounts:
         "feature.counts.dir/featurecounts.load"
     params:
         job_memory=config["sqlite"].get("himem")
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -190,7 +195,7 @@ rule geneCounts:
                 "scripts",
                 "feature_counts_table.py"),
         database=config["database"].get("db"),
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -216,7 +221,7 @@ rule load_gene_counts:
     output:
         "feature.counts.dir/featurecounts_counts.load"
     params:
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -239,7 +244,7 @@ rule load_transcript_info:
     output:
         os.path.join("transcript.info.load")
     params:
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -267,7 +272,7 @@ rule n_genes_detected:
                 "scripts",
                 "feature_counts_no_genes_detected.py"),
         database=config["database"].get("db"),
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -293,7 +298,7 @@ rule loadNGenesDetected:
     output:
         "feature.counts.dir/number.genes.detected.featurecounts.load"
     params:
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:

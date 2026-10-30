@@ -79,7 +79,12 @@ from txseq.functions_from_cgat.pipeline.database import load
 from txseq.functions_from_cgat.pipeline.parameters import PARAMS
 
 PARAMS.update(config)
-RESOURCES = config.get("resources", {})
+# Per-rule job resources (mem_mb, runtime, ...) from the `resources:` section
+# of the config. "threads" is a directive, not a resource, so it is held
+# separately. The Slurm account and partition are cluster-level settings
+# that the txseq CLI applies to every job via --default-resources.
+RESOURCES = dict(config.get("resources") or {})
+THREADS = RESOURCES.pop("threads", 1)
 
 ## use txseq tasks to read in sample and library tables
 S = T.samples(sample_tsv = config.get("samples"),
@@ -145,7 +150,7 @@ rule fastqc:
         adaptors=adaptors,
         limits=limits,
         contaminants=contaminants,
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -173,7 +178,7 @@ rule summariseFastQC:
                module=fastqc_outputs)
     params:
 
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -207,7 +212,7 @@ rule buildFastQCSummaryStatus:
     output: 
         "fastqc.summary.dir/fastqc_status_summary.tsv.gz"
     params:
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -230,7 +235,7 @@ rule loadFastQC:
                module=fastqc_outputs),
         status_summary_stats_load="fastqc.summary.dir/fastqc_status_summary.load",
     params:
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:
@@ -283,7 +288,7 @@ rule load_metadata:
         "fastqc.dir/load.metadata.sentinel"
     params:
         sqlite_url=config["database"].get("url")
-    threads: RESOURCES["threads"]
+    threads: THREADS
     resources:
         **RESOURCES,
     log:

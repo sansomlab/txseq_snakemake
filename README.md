@@ -66,9 +66,34 @@ txseq hisat full --cores 20 --jobs 25
 ```
 
 The configuration file is validated before Snakemake is invoked. In
-particular, a valid Slurm account must be set under `resources.account`;
-the run will not start while this is unset or left as the template
-placeholder.
+particular, a valid Slurm account must be set under `slurm.account`; the run
+will not start while this is unset, left as the template placeholder, or not
+one of the accounts associated with your user. When the template is written,
+`slurm.account` is pre-filled with your default Slurm account where this can
+be determined.
+
+```yaml
+# Applied to every job submitted by the workflow
+slurm:
+    account: kir.prj
+    partition: short
+
+# Per-rule job resources
+resources:
+    threads: 1
+    mem_mb: 1000
+    runtime: 60
+```
+
+The account and partition are passed to Snakemake as default resources
+(`--default-resources slurm_account=... slurm_partition=...`), so every
+submitted job carries them, including rules that define their own memory or
+runtime. If a workflow is run with `snakemake` directly rather than through
+`txseq`, the same `--default-resources` arguments must be supplied.
+
+Configuration files created by earlier versions, which set `account` or
+`slurm_account` under `resources:`, are still accepted; a warning is printed
+recommending the move to the `slurm:` section.
 
 
 ### Options

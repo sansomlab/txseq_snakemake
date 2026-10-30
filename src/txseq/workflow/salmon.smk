@@ -73,7 +73,12 @@ from txseq.functions_from_cgat.pipeline.database import load
 #General pipeline prep
 
 PARAMS.update(config)
-RESOURCES = config.get("resources", {})
+# Per-rule job resources (mem_mb, runtime, ...) from the `resources:` section
+# of the config. "threads" is a directive, not a resource, so it is held
+# separately. The Slurm account and partition are cluster-level settings
+# that the txseq CLI applies to every job via --default-resources.
+RESOURCES = dict(config.get("resources") or {})
+THREADS = RESOURCES.pop("threads", 1)
 
 ## use txseq tasks to read in sample and library tables
 S = T.samples(sample_tsv = config.get("samples"),
