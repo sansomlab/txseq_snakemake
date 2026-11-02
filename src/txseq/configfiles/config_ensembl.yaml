@@ -15,6 +15,7 @@ rundir:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
 #
+#It is safest to use full paths (not ./)
 primary_assembly: 
 
 # A local path to the Ensembl geneset in gzipped GTF format
@@ -27,6 +28,7 @@ primary_assembly:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.110.gtf.gz
 #
+#It is safest to use full paths (not ./)
 geneset: 
 
 # A local path to the Ensembl cDNA FASTA sequences in gzipped FASTA format
@@ -39,6 +41,7 @@ geneset:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.cdna.all.fa.gz
 #
+#It is safest to use full paths (not ./)
 cdna: 
 
 # A local path to the Ensembl ncRNA FASTA sequences in gzipped FASTA format
@@ -51,6 +54,7 @@ cdna:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/Mus_musculus.GRCm39.ncrna.fa.gz
 #
+#It is safest to use full paths (not ./)
 ncrna: 
 
 # A local path to PAR region definitions in BED format
@@ -64,6 +68,7 @@ ncrna:
 #  for the mouse_hsc_example, set to: 
 #      /my/path/to/GRCm39.PAR.bed
 #
+#It is safest to use full paths (not ./)
 par: 
 
 resources:

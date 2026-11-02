@@ -3,6 +3,7 @@
 #
 
 # The libraries.tsv file- see config docs
+#It is safest to use full paths (not ./)
 libraries: ~/path/to/libraries.tsv
 
 # Trim reads?

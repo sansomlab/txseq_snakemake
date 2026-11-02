@@ -1,6 +1,7 @@
 # hisat_index.smk configuration file
 # ==========================================
 #
+#It is safest to use full paths (not ./)
 rundir:
 # see: http://daehwankimlab.github.io/hisat2/howto/#build-hgfm-index-with-transcripts
 # this pipeline will build a HGFM index with transcripts
@@ -14,6 +15,7 @@ rundir:
 # For the mouse_hscs example, set to 
 #       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
 #
+#It is safest to use full paths (not ./)
 primary_assembly: 
 
 # The txseq sanitised ensembl GTF genset
@@ -25,6 +27,7 @@ primary_assembly:
 # For the mouse_hscs example, set to 
 #       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.geneset.fa.gz
 #
+#It is safest to use full paths (not ./)
 geneset: 
 
 

@@ -1,6 +1,7 @@
 # pipeline salmon_index.smk configuration file
 # ===========================================
 #
+#It is safest to use full paths (not ./)
 rundir:
 # see: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
 # used for building a SAF genome index
@@ -15,6 +16,7 @@ rundir:
 # For the mouse_hscs example, set to 
 #       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.genome.fa.gz
 #
+#It is safest to use full paths (not ./)
 genome_fasta: 
 
 
@@ -27,6 +29,7 @@ genome_fasta:
 # For the mouse_hscs example, set to 
 #       /my/path/to/GRCm39.110.dir/ensembl.dir/api.dir/txseq.transcript.fa.gz
 #
+#It is safest to use full paths (not ./)
 transcript_fasta: 
 
 # The source of the fasta file.

@@ -1,6 +1,7 @@
 # Pipeline bamqc.smk configuration file
 # =============================================
 #
+#It is safest to use full paths (not ./)
 rundir: 
 # select tasks to run
 run:
@@ -15,9 +16,11 @@ strand:
 paired: 
  
 # path to the sample table
+#It is safest to use full paths (not ./)
 samples: ~/path/to/samples.tsv
 
 # path to the folder containing the bam files
+#It is safest to use full paths (not ./)
 bam_path:  ~/path/to/hisat/hisat.dir/
 
 txseq:
@@ -31,6 +34,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir
   #
+  #It is safest to use full paths (not ./)
   annotations:  
   
 picard:

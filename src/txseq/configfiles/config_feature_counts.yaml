@@ -10,6 +10,7 @@ database:
   db: csvdb
 
 # path to the sample table
+#It is safest to use full paths (not ./)
 samples: ~/path/to/samples.tsv
 
 bam_path: ~/path/to/hisat/hisat.dir
@@ -27,6 +28,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir
   #
+  #It is safest to use full paths (not ./)
   annotations: 
 
 featurecounts:

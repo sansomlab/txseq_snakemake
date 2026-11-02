@@ -8,22 +8,27 @@ database:
   db: csvdb
 
 # path to the sample table
+#It is safest to use full paths (not ./)
 samples: ~/path/to/samples.tsv
 
 # Path to the table of sequencing libraries 
+#It is safest to use full paths (not ./)
 libraries: ~/path/to/libraries.tsv
 
 fastqc:
   # Path to file with contaminants or "default"
   # if set to "default" an inbuilt default list is used
+  #It is safest to use full paths (not ./)
   contaminants: default
 
   # Path to file with adaptors or "default"
   # If set to "default" an inbuilt default list is used
+  #It is safest to use full paths (not ./)
   adaptors: default
   
   # Path to file with limits or "default"
   # If set to "default" the central limits file is used
+  #It is safest to use full paths (not ./)
   limits: default
 
 resources:

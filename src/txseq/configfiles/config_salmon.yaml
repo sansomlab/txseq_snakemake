@@ -11,9 +11,11 @@ database:
   db: csvdb
 
 # path to the sample table
+#It is safest to use full paths (not ./)
 samples: ./path/to/samples.tsv
 
 # Path to the table of sequencing libraries 
+#It is safest to use full paths (not ./)
 libraries: ./path/to/libraries.tsv
 
 txseq:
@@ -27,6 +29,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/ensembl.dir/
   #
+  #It is safest to use full paths (not ./)
   annotations: 
   
   # Path to the location where the "txseq salmon_index" pipeline was run
@@ -40,6 +43,7 @@ txseq:
   # For the mouse_hscs example, set to 
   #       /my/path/to/GRCm39.110.dir/salmon.index.dir/salmon_index
   #
+  #It is safest to use full paths (not ./)
   salmon_index:
   #unique name for index
   salmon_index_name: 
