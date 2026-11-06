@@ -58,6 +58,8 @@ collect_rnaseqmetrics_memory: 8000
 resources:
     mem_mb: 12000
     runtime: 120
+    # Slurm account and partition, applied to every job this workflow submits.
+    # The account is mandatory: use a Slurm account you are associated with
+    # (list them with: sacctmgr -nP show assoc user=$USER format=Account).
+    slurm_account: your_slurm_account
     slurm_partition: short
-    slurm_account: kir.prj
-
