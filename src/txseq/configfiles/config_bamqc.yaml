@@ -51,6 +51,10 @@ picard:
     estimatelibrarycomplexity_options:
     insertsizemetric_options:
 
+collect_rnaseqmetrics_runtime: 120
+collect_rnaseqmetrics_threads: 3
+collect_rnaseqmetrics_memory: 8000
+
 resources:
     mem_mb: 12000
     runtime: 120
