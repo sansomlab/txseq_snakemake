@@ -101,7 +101,16 @@ ss_file = os.path.join(os.path.dirname(config["txseq"].get("hisat_index")),
                                "genome.ss")
 print("ss file is "+ss_file)
 
-RESOURCES = config.get("resources", {})
+# Per-rule job resources (mem_mb, runtime, ...) from the `resources:` section
+# of the config. "threads" is a directive, not a resource, so it is held
+# separately. The Slurm account and partition are removed here because the
+# txseq CLI applies them to every job via --default-resources; keeping a
+# single route ensures all jobs, including rules with their own resources,
+# are submitted with the same account.
+RESOURCES = dict(config.get("resources") or {})
+THREADS = RESOURCES.pop("threads", 1)
+for _key in ("slurm_account", "slurm_partition", "account", "partition"):
+    RESOURCES.pop(_key, None)
 
 
 # --------------------- Pipeline --------------------------- #
@@ -125,7 +134,7 @@ rule first_pass:
         fastq_input=lambda wildcards: fastq_input(wildcards.samp),
         known_ss=ss_file,
     threads:
-        config["hisat_thread"],
+        THREADS,
     resources:
         **RESOURCES,
     log:
