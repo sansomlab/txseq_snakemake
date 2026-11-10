@@ -32,7 +32,7 @@ txseq:
    annotations:
   
   # Path to the location where the "txseq hisat_index" pipeline was run
-  # to generate the hisat index
+  # to generate the hisat index. The genome_tran extension is essential.
   #
   # If working on the KIR BMRC space, use e.g.
   #       for human: /well/kir/mirror/txseq/GRCh38.115.dir/hisat_index/genome_tran

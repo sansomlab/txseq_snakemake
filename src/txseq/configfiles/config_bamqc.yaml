@@ -12,6 +12,10 @@ run:
 sqlite:
   file: csvdb
 
+database:
+  url: sqlite:///csvdb
+  db: csvdb
+
 strand: 
 paired: 
  

@@ -46,7 +46,7 @@ txseq:
   #It is safest to use full paths (not ./)
   salmon_index:
   #unique name for index
-  salmon_index_name: 
+  salmon_index_name: my_index
 
 salmon:
   # options that will be passed to the salmon quant read-aligment call
