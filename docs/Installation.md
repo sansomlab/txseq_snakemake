@@ -33,7 +33,7 @@ install.packages(c("devtools","BiocManager"))
 
 Install the required R packages by running the following command from the bash shell:
 ```R
-Rscript src/txseq/R/txseq/install.packages.R
+Rscript src/txseq/R/txseq/install.R
 ```
 
 Install the txseq R library by running the following command from the bash shell:
