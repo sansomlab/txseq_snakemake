@@ -1,0 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500;600&display=swap");
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 550;
+}
